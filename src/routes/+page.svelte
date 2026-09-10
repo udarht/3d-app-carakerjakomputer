@@ -2,10 +2,14 @@
   import { onMount } from 'svelte';
   import CanvasContainer from '$lib/components/CanvasContainer.svelte';
   import SplashScreen from '$lib/components/SplashScreen.svelte';
+  import GuideModal from '$lib/components/GuideModal.svelte';
+  import MainMenu from '$lib/components/MainMenu.svelte';
   import { hardwareData } from '$lib/data/hardware.js';
 
   let isMounted = $state(false);
   let showSplash = $state(true);
+  let isGuideOpen = $state(false);
+  let isMenuOpen = $state(false);
   let selectedId = $state('keyboard');
   let selectedCategory = $state('Semua');
   let isInfoOpen = $state(true);
@@ -68,31 +72,72 @@
     <SplashScreen onStart={() => (showSplash = false)} />
   {/if}
 
+  <!-- Guide Modal / Panduan Penggunaan -->
+  <GuideModal isOpen={isGuideOpen} onClose={() => (isGuideOpen = false)} />
+
+  <!-- Main Menu Dashboard Modal -->
+  <MainMenu isOpen={isMenuOpen} onClose={() => (isMenuOpen = false)} />
+
   <!-- Header Branding -->
   <header class="top-header">
-    <div class="brand">
-      <!-- Logo Pendidikan Kemdikbud / Sobat SMP Strip -->
-      <div class="edu-logos">
-        <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="edu-logo-img" title="Tut Wuri Handayani - Kemdikbudristek" />
-        <img src="/images/Logo_02.png" alt="Logo Pendidikan 2" class="edu-logo-img" />
-        <img src="/images/Logo_03.png" alt="Logo Pendidikan 3" class="edu-logo-img" />
-        <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP 2025" class="edu-logo-img logo-sobat" title="Sobat SMP 2025" />
+    <div class="brand-column">
+      <div class="brand-row">
+        <!-- Tombol Beranda / Menu Utama Konsisten (Min 44x44 px) -->
+        <button
+          type="button"
+          class="home-nav-btn"
+          onclick={() => (isMenuOpen = true)}
+          title="Buka Menu Utama / Dashboard Pembelajaran"
+          aria-label="Menu Utama Pembelajaran"
+        >
+          <span class="home-btn-icon">🏠</span>
+          <span class="hidden md:inline">Menu Utama</span>
+        </button>
+
+        <div class="brand">
+          <!-- Logo Pendidikan Kemdikbud / Sobat SMP Strip -->
+          <div class="edu-logos">
+            <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="edu-logo-img" title="Tut Wuri Handayani - Kemdikbudristek" />
+            <img src="/images/Logo_02.png" alt="Logo Pendidikan 2" class="edu-logo-img" />
+            <img src="/images/Logo_03.png" alt="Logo Pendidikan 3" class="edu-logo-img" />
+            <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP 2025" class="edu-logo-img logo-sobat" title="Sobat SMP 2025" />
+          </div>
+          <div class="brand-divider"></div>
+          <div class="brand-text">
+            <h1 class="brand-title">CARA KERJA KOMPUTER</h1>
+            <p class="brand-subtitle">Interactive 3D Hardware Exploration</p>
+          </div>
+        </div>
       </div>
-      <div class="brand-divider"></div>
-      <div class="brand-text">
-        <h1 class="brand-title">CARA KERJA KOMPUTER</h1>
-        <p class="brand-subtitle">Interactive 3D Hardware Exploration</p>
+
+      <!-- Orbit Controls Hint (Di bawah logo) -->
+      <div class="interaction-hint">
+        <span class="hint-icon">🔄</span>
+        <span>Klik & Geser untuk memutar • Scroll untuk zoom</span>
       </div>
     </div>
 
     <!-- Header Right Controls: Mode Toggle, Info & Hint -->
     <div class="header-right-group">
+      <!-- Tombol Panduan Penggunaan (Min 44x44 px touch-friendly) -->
+      <button
+        type="button"
+        class="guide-nav-btn"
+        onclick={() => (isGuideOpen = true)}
+        title="Buka Panduan Penggunaan Media"
+        aria-label="Panduan Penggunaan Media"
+      >
+        <span class="guide-btn-icon">❓</span>
+        <span>Panduan</span>
+      </button>
+
       <!-- Tombol Buka Kembali Splash / Info Kurikulum -->
       <button
         type="button"
         class="info-panduan-btn"
         onclick={() => (showSplash = true)}
         title="Buka Info Media & Kurikulum Pembelajaran"
+        aria-label="Info Media & Kurikulum"
       >
         <span>📖</span>
         <span class="hidden sm:inline">Info Media</span>
@@ -111,12 +156,6 @@
           <span class="mode-icon">🧩</span>
           <span>Kuis Game</span>
         </a>
-      </div>
-
-      <!-- Orbit Controls Hint -->
-      <div class="interaction-hint">
-        <span class="hint-icon">🔄</span>
-        <span>Klik & Geser untuk memutar • Scroll untuk zoom</span>
       </div>
     </div>
   </header>
@@ -360,9 +399,58 @@
     right: 24px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     pointer-events: none;
     z-index: 10;
+  }
+
+  .brand-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .brand-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto;
+  }
+
+  .home-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    height: 44px;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 16px;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e293b;
+    cursor: pointer;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+    pointer-events: auto;
+    box-sizing: border-box;
+  }
+
+  .home-nav-btn:hover {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.3);
+  }
+
+  .home-btn-icon {
+    font-size: 1.05rem;
   }
 
   .brand {
@@ -372,10 +460,12 @@
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.9);
-    padding: 6px 16px 6px 10px;
+    height: 44px;
+    padding: 0 16px 0 10px;
     border-radius: 9999px;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
     pointer-events: auto;
+    box-sizing: border-box;
   }
 
   .edu-logos {
@@ -466,6 +556,40 @@
     gap: 10px;
   }
 
+  .guide-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #0284c7, #4f46e5);
+    color: #ffffff;
+    border: none;
+    height: 44px;
+    min-width: 44px;
+    padding: 0 16px;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+    transition: all 0.2s ease;
+    pointer-events: auto;
+    box-sizing: border-box;
+  }
+
+  .guide-nav-btn:hover {
+    background: linear-gradient(135deg, #0369a1, #4338ca);
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4);
+  }
+
+  .guide-nav-btn:active {
+    transform: scale(0.98);
+  }
+
+  .guide-btn-icon {
+    font-size: 0.95rem;
+  }
+
   .info-panduan-btn {
     display: flex;
     align-items: center;
@@ -473,7 +597,9 @@
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.9);
-    padding: 7px 14px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0 14px;
     border-radius: 9999px;
     font-size: 0.82rem;
     font-weight: 700;
@@ -482,6 +608,7 @@
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
     pointer-events: auto;
+    box-sizing: border-box;
   }
 
   .info-panduan-btn:hover {
@@ -493,26 +620,31 @@
 
   .mode-toggle-group {
     display: flex;
+    align-items: center;
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.9);
+    height: 44px;
     padding: 4px;
     border-radius: 9999px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
     pointer-events: auto;
+    box-sizing: border-box;
   }
 
   .mode-link {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px;
+    height: 100%;
+    padding: 0 14px;
     border-radius: 9999px;
     text-decoration: none;
     font-size: 0.82rem;
     font-weight: 600;
     color: #64748b;
     transition: all 0.2s;
+    box-sizing: border-box;
   }
 
   .mode-link:hover:not(.active) {
@@ -529,20 +661,22 @@
   .interaction-hint {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    padding: 8px 16px;
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    padding: 6px 14px;
     border-radius: 9999px;
-    font-size: 0.82rem;
+    font-size: 0.76rem;
+    font-weight: 600;
     color: #475569;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    gap: 7px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
     pointer-events: auto;
+    margin-left: 4px;
   }
 
   .hint-icon {
-    font-size: 1rem;
+    font-size: 0.88rem;
     animation: rotate 6s linear infinite;
   }
 

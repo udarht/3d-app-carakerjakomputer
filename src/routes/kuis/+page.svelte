@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import GuideModal from '$lib/components/GuideModal.svelte';
+  import MainMenu from '$lib/components/MainMenu.svelte';
   import { quizItems, categoryDefinitions } from '$lib/data/quiz.js';
 
   interface QuizCard {
@@ -12,6 +14,8 @@
   }
 
   // State
+  let isGuideOpen = $state(false);
+  let isMenuOpen = $state(false);
   let bankItems = $state<QuizCard[]>([]);
   let categorySlots = $state<Record<string, QuizCard[]>>({
     Input: [],
@@ -164,6 +168,43 @@
     categorySlots.Storage.length +
     categorySlots.Output.length
   );
+
+  // Review Filter: 'all' | 'wrong'
+  let reviewFilter = $state<'all' | 'wrong'>('all');
+
+  // Evaluated items list for comprehensive review section
+  interface EvaluatedItem extends QuizCard {
+    placedCategory: string | null;
+    isCorrect: boolean;
+  }
+
+  let evaluatedList = $derived<EvaluatedItem[]>(() => {
+    return quizItems.map((item) => {
+      let placedCat: string | null = null;
+      for (const cat of ['Input', 'Process', 'Storage', 'Output']) {
+        if (categorySlots[cat].some((x) => x.id === item.id)) {
+          placedCat = cat;
+          break;
+        }
+      }
+      const isCorrect = placedCat === item.correctCategory;
+      return {
+        ...item,
+        placedCategory: placedCat,
+        isCorrect
+      };
+    });
+  });
+
+  let filteredReviewList = $derived(() => {
+    const list = evaluatedList();
+    if (reviewFilter === 'wrong') {
+      return list.filter((x) => !x.isCorrect);
+    }
+    return list;
+  });
+
+  let wrongCount = $derived(() => evaluatedList().filter((x) => !x.isCorrect).length);
 </script>
 
 <svelte:head>
@@ -171,49 +212,82 @@
   <meta name="description" content="Uji pemahaman klasifikasi perangkat keras komputer (Input, Process, Storage, Output) dengan kuis drag and drop interaktif." />
 </svelte:head>
 
+<!-- Guide Modal / Panduan Penggunaan -->
+<GuideModal isOpen={isGuideOpen} onClose={() => (isGuideOpen = false)} />
+
+<!-- Main Menu Dashboard Modal -->
+<MainMenu isOpen={isMenuOpen} onClose={() => (isMenuOpen = false)} />
+
 <div class="min-h-screen bg-slate-100 text-slate-800 font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
   <!-- TOP NAVIGATION HEADER (Light theme with subtle blur and border, consistent with 3D Viewer) -->
-  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/90 px-4 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-sm">
-    <div class="flex items-center gap-3">
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/90 px-3 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+    <div class="flex items-center gap-2.5 sm:gap-3">
+      <!-- Tombol Beranda / Menu Utama Konsisten (Min 44x44 px) -->
+      <button
+        type="button"
+        onclick={() => (isMenuOpen = true)}
+        class="min-h-[44px] min-w-[44px] px-3 sm:px-4 py-2 rounded-2xl bg-white hover:bg-sky-50 active:bg-sky-100 text-slate-700 hover:text-sky-700 border border-slate-200 hover:border-sky-200 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+        title="Buka Menu Utama / Dashboard Pembelajaran"
+        aria-label="Menu Utama Pembelajaran"
+      >
+        <span class="text-base sm:text-lg">🏠</span>
+        <span class="hidden md:inline">Menu Utama</span>
+      </button>
+
       <!-- Education Logos Strip -->
-      <div class="flex items-center gap-1.5 bg-slate-100/90 border border-slate-200/80 rounded-full px-2.5 py-1 shadow-sm">
-        <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-7 w-auto object-contain hover:scale-110 transition-transform" title="Tut Wuri Handayani" />
-        <img src="/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-7 w-auto object-contain hover:scale-110 transition-transform" />
-        <img src="/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-7 w-auto object-contain hover:scale-110 transition-transform" />
-        <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-7 w-auto max-w-[60px] object-contain hover:scale-110 transition-transform" title="Sobat SMP 2025" />
+      <div class="hidden sm:flex items-center gap-1.5 bg-slate-100/90 border border-slate-200/80 rounded-full px-2.5 py-1 shadow-sm">
+        <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-6 w-auto object-contain hover:scale-110 transition-transform" title="Tut Wuri Handayani" />
+        <img src="/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-6 w-auto object-contain hover:scale-110 transition-transform" />
+        <img src="/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-6 w-auto object-contain hover:scale-110 transition-transform" />
+        <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-6 w-auto max-w-[50px] object-contain hover:scale-110 transition-transform" title="Sobat SMP 2025" />
       </div>
-      <div class="hidden sm:block w-[1px] h-6 bg-slate-300"></div>
+      <div class="hidden md:block w-[1px] h-6 bg-slate-300"></div>
       <div>
         <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 flex items-center gap-2">
-          KUIS DRAG & DROP <span class="text-xs px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 font-semibold">Game Edukasi</span>
+          KUIS DRAG & DROP <span class="text-xs px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 font-semibold">Game Edukasi</span>
         </h1>
-        <p class="text-xs text-slate-500">Kelompokkan 9 perangkat ke kotak kategori yang tepat!</p>
+        <p class="text-[11px] sm:text-xs text-slate-500 hidden sm:block">Kelompokkan 9 perangkat ke kotak kategori yang tepat!</p>
       </div>
     </div>
 
-    <!-- Mode Navigation Switcher -->
-    <div class="flex items-center gap-1.5 bg-slate-200/70 p-1.5 rounded-full border border-slate-300/80 text-sm shadow-inner">
-      <a
-        href="/"
-        class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold"
+    <!-- Header Controls: Mode Navigation Switcher & Panduan Button -->
+    <div class="flex items-center gap-2.5">
+      <!-- Tombol Panduan Penggunaan (Tinggi 44px) -->
+      <button
+        type="button"
+        onclick={() => (isGuideOpen = true)}
+        class="h-[44px] min-w-[44px] px-4 rounded-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-sky-600/20 hover:shadow-lg hover:shadow-sky-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer box-border"
+        title="Buka Panduan Penggunaan Media"
+        aria-label="Panduan Penggunaan Media"
       >
-        <span>🔍</span>
-        <span class="hidden sm:inline">Mode Eksplorasi</span>
-      </a>
-      <a
-        href="/simulasi"
-        class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold"
-      >
-        <span>🚀</span>
-        <span class="hidden sm:inline">Mode Simulasi</span>
-      </a>
-      <a
-        href="/kuis"
-        class="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-900 text-white font-bold shadow-md text-xs transition-all"
-      >
-        <span>🧩</span>
-        <span>Kuis Game</span>
-      </a>
+        <span class="text-sm">❓</span>
+        <span>Panduan</span>
+      </button>
+
+      <!-- Mode Navigation Switcher -->
+      <div class="h-[44px] flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-full border border-slate-300/80 text-sm shadow-inner box-border">
+        <a
+          href="/"
+          class="h-full flex items-center gap-1.5 px-3.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold box-border"
+        >
+          <span>🔍</span>
+          <span class="hidden sm:inline">Mode Eksplorasi</span>
+        </a>
+        <a
+          href="/simulasi"
+          class="h-full flex items-center gap-1.5 px-3.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold box-border"
+        >
+          <span>🚀</span>
+          <span class="hidden sm:inline">Mode Simulasi</span>
+        </a>
+        <a
+          href="/kuis"
+          class="h-full flex items-center gap-1.5 px-4 rounded-full bg-slate-900 text-white font-bold shadow-md text-xs transition-all box-border"
+        >
+          <span>🧩</span>
+          <span>Kuis Game</span>
+        </a>
+      </div>
     </div>
   </header>
 
@@ -256,7 +330,7 @@
     <!-- RESULT BANNER (IF CHECKED) -->
     {#if isChecked}
       <div
-        class="p-5 rounded-2xl border transition-all duration-300 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm"
+        class="p-5 rounded-2xl border transition-all duration-300 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-feedback-slide"
         style={score === quizItems.length
           ? 'background-color: #ecfdf5; border-color: #a7f3d0;'
           : 'background-color: #ffffff; border-color: #e2e8f0;'}
@@ -295,6 +369,114 @@
           </div>
         </div>
       </div>
+
+      <!-- PANEL RINGKASAN & PEMBAHASAN KONSEP ILMIAH (REVIEW SECTION) -->
+      <section class="bg-white/95 rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-sm flex flex-col gap-4 animate-feedback-slide">
+        <!-- Header Panel Pembahasan & Filter Cepat -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl">📚</span>
+              <h3 class="text-base font-bold text-slate-900">Pembahasan & Ulasan Konsep Ilmiah</h3>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Analisis mendalam fungsi dan dasar sains komputer untuk setiap perangkat keras.
+            </p>
+          </div>
+
+          <!-- Filter Cepat: Semua vs Hanya yang Salah -->
+          <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl self-start sm:self-auto border border-slate-200 text-xs">
+            <button
+              type="button"
+              onclick={() => (reviewFilter = 'all')}
+              class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer {reviewFilter === 'all'
+                ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
+                : 'text-slate-600 hover:text-slate-900'}"
+            >
+              Semua Perangkat ({quizItems.length})
+            </button>
+            <button
+              type="button"
+              onclick={() => (reviewFilter = 'wrong')}
+              class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1 {reviewFilter === 'wrong'
+                ? 'bg-rose-600 text-white shadow-xs'
+                : 'text-rose-700 hover:bg-rose-50'}"
+            >
+              <span>Hanya yang Salah</span>
+              {#if wrongCount() > 0}
+                <span class="px-1.5 py-0.2 rounded-full text-[10px] {reviewFilter === 'wrong' ? 'bg-white text-rose-700' : 'bg-rose-100 text-rose-800'}">
+                  {wrongCount()}
+                </span>
+              {/if}
+            </button>
+          </div>
+        </div>
+
+        <!-- Daftar Kartu Pembahasan Konsep -->
+        {#if filteredReviewList().length === 0}
+          <div class="py-8 text-center bg-emerald-50/60 rounded-xl border border-emerald-200/70 p-4">
+            <span class="text-2xl mb-1 block">🎉</span>
+            <span class="text-sm font-bold text-emerald-800">Hebat! Tidak ada jawaban yang salah!</span>
+            <p class="text-xs text-emerald-700 mt-1">Anda telah menguasai semua klasifikasi perangkat keras dengan sempurna.</p>
+          </div>
+        {:else}
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {#each filteredReviewList() as item (item.id)}
+              <div
+                class="p-4 rounded-xl border transition-all flex flex-col justify-between gap-2.5"
+                class:bg-emerald-50={item.isCorrect}
+                class:border-emerald-200={item.isCorrect}
+                class:bg-rose-50={!item.isCorrect}
+                class:border-rose-200={!item.isCorrect}
+              >
+                <!-- Header Kartu Pembahasan -->
+                <div>
+                  <div class="flex items-start justify-between gap-2 mb-2">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl p-1.5 rounded-lg bg-white shadow-2xs">{item.icon}</span>
+                      <div>
+                        <h4 class="text-sm font-bold text-slate-900">{item.name}</h4>
+                        <span class="text-[11px] font-semibold text-slate-500">Kategori Resmi: {item.correctCategory} Device</span>
+                      </div>
+                    </div>
+
+                    <!-- Status Evaluasi -->
+                    {#if item.isCorrect}
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
+                        ✓ TEPAT
+                      </span>
+                    {:else}
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-800 border border-rose-300 shrink-0">
+                        ✗ KELIRU
+                      </span>
+                    {/if}
+                  </div>
+
+                  <!-- Rekap Status Penempatan -->
+                  {#if !item.isCorrect}
+                    <div class="mb-2 p-2 rounded-lg bg-white/80 border border-rose-200 text-[11px] leading-tight space-y-1">
+                      <div class="text-rose-900">
+                        <span class="font-bold">Jawaban Anda:</span> {item.placedCategory ? `${item.placedCategory} Device` : 'Belum Ditempatkan'}
+                      </div>
+                      <div class="text-emerald-900 font-semibold">
+                        <span class="font-bold">Kategori Tepat:</span> {item.correctCategory} Device
+                      </div>
+                    </div>
+                  {/if}
+
+                  <!-- Teks Penjelasan Konsep Ilmiah Lengkap -->
+                  <div class="text-xs leading-relaxed {item.isCorrect ? 'text-emerald-950' : 'text-rose-950'}">
+                    <span class="font-bold block mb-0.5 text-slate-900">🔬 Dasar Konsep Ilmiah:</span>
+                    <p class="font-medium bg-white/70 p-2 rounded-lg border {item.isCorrect ? 'border-emerald-100 text-emerald-900' : 'border-rose-100 text-rose-900'}">
+                      {item.explanation}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </section>
     {/if}
 
     <!-- AREA ATAS: BANK KARTU PERANGKAT -->
@@ -462,21 +644,50 @@
                     </div>
                   </div>
 
-                  <!-- Feedback Penjelasan jika Salah atau Benar -->
+                  <!-- Feedback Penjelasan Ilmiah Terstruktur saat Diperiksa -->
                   {#if isChecked}
-                    <div class="mt-2 pt-2 border-t text-[11px] leading-relaxed"
-                         style={isCorrect ? 'border-color: #a7f3d0; color: #065f46;' : 'border-color: #fecaca; color: #991b1b;'}>
-                      {#if !isCorrect}
-                        <div class="font-bold text-rose-700 mb-0.5">
-                          ⚠️ Seharusnya: {item.correctCategory} Device
+                    <div
+                      class="mt-2.5 p-2.5 rounded-xl border text-xs leading-relaxed animate-feedback-slide"
+                      class:bg-emerald-50={isCorrect}
+                      class:border-emerald-200={isCorrect}
+                      class:text-emerald-950={isCorrect}
+                      class:bg-rose-50={!isCorrect}
+                      class:border-rose-200={!isCorrect}
+                      class:text-rose-950={!isCorrect}
+                    >
+                      {#if isCorrect}
+                        <div class="flex items-center gap-1.5 font-bold text-emerald-800 mb-1">
+                          <span class="text-sm">✅</span>
+                          <span>Konsep Ilmiah Tepat:</span>
+                        </div>
+                        <p class="text-[11px] text-emerald-900 font-medium">
+                          {item.explanation}
+                        </p>
+                      {:else}
+                        <div class="space-y-1 mb-1.5 pb-1.5 border-b border-rose-200/80">
+                          <div class="flex items-center gap-1 font-bold text-rose-800">
+                            <span class="text-sm">⚠️</span>
+                            <span>Evaluasi Jawaban:</span>
+                          </div>
+                          <div class="grid grid-cols-2 gap-1 text-[10px]">
+                            <div class="bg-rose-100/80 px-2 py-1 rounded text-rose-900 font-semibold">
+                              Jawaban Anda: <span class="underline font-bold">{cat.title}</span>
+                            </div>
+                            <div class="bg-emerald-100/90 px-2 py-1 rounded text-emerald-900 font-bold">
+                              Kategori Tepat: <span class="underline">{item.correctCategory} Device</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="text-[11px] text-rose-900 font-medium leading-normal">
+                          <span class="font-bold text-rose-950">Penjelasan Konsep:</span> {item.explanation}
                         </div>
                       {/if}
-                      <p>{item.explanation}</p>
                     </div>
                   {:else}
                     <!-- Petunjuk Singkat Saat Belum Diperiksa -->
-                    <div class="mt-1 text-[10px] text-slate-500 truncate">
-                      {item.hint}
+                    <div class="mt-1.5 text-[10px] text-slate-500 flex items-center gap-1 truncate">
+                      <span class="text-slate-400">💡</span>
+                      <span class="truncate">{item.hint}</span>
                     </div>
                   {/if}
                 </div>
@@ -509,5 +720,22 @@
     overflow-y: auto !important;
     overflow-x: hidden;
     background-color: #f1f5f9;
+  }
+
+  @keyframes feedbackSlideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-feedback-slide {
+    animation: feedbackSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 </style>
