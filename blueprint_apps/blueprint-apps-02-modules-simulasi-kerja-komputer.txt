@@ -1,0 +1,27 @@
+==================================================
+CUSTOM CODEBASE MAP: SIMULASI ALUR KERJA KOMPUTER
+==================================================
+
+[Komponen: Halaman Simulasi Alur Kerja IPOS]
+- File Path          : src/routes/simulasi/+page.svelte
+- Tipe/Entitas       : UI Component (Page Controller / State Machine)
+- Tanggung Jawab     : Mengorkestrasi 4 siklus kerja komputer (Input, Process, Output, Storage / IPOS), mengelola alur state simulasi (userInput, processedData, isSignalKbToCpu, isCpuProcessing, isRamProcessing, isSignalCpuToMonitor, showMonitorText, isSignalRamToSsd, ssdSaved, isBusy), menyediakan navigasi kartu narasi edukatif, form input teks pengguna, tombol pemicu langkah otomatis, dan fungsi reset simulasi.
+- Ketergantungan     : src/lib/components/SimulasiCanvas.svelte
+- Menggunakan Paket  : svelte (^5.56.1)
+- Entry Point        : Route URL: `/simulasi`
+
+[Komponen: Canvas Simulasi 3D]
+- File Path          : src/lib/components/SimulasiCanvas.svelte
+- Tipe/Entitas       : UI Component (3D Canvas Wrapper)
+- Tanggung Jawab     : Menginisialisasi canvas WebGL Threlte untuk mode simulasi, mengatur latar belakang gradasi radial studio meja kerja komputasi, dan meneruskan seluruh state interaksi/animasi alur sinyal ke dalam scene simulasi 3D.
+- Ketergantungan     : src/lib/components/SimulasiScene.svelte
+- Menggunakan Paket  : @threlte/core (^8.6.0)
+- Entry Point        : Dipanggil secara deklaratif oleh `src/routes/simulasi/+page.svelte`
+
+[Komponen: Scene Simulasi & Jalur Data Bus Interaktif]
+- File Path          : src/lib/components/SimulasiScene.svelte
+- Tipe/Entitas       : UI Component (3D Scene & Animation Orchestrator)
+- Tanggung Jawab     : Menata meja kerja futuristik (workbench), alas motherboard terpadu beraksen sirkuit, kamera orbit interaktif (PerspectiveCamera + OrbitControls), dan pencahayaan studio. Mengkalkulasi kurva jalur pergerakan data 3D (THREE.CatmullRomCurve3) untuk Keyboard->CPU, CPU->Monitor, dan RAM->SSD. Menjalankan render loop via `useTask` untuk animasi partikel paket data biner, efek cahaya neon/emissive glowing bus line, serta mengintegrasikan model hardware 3D (Keyboard, CPU, RAM, SSD, Monitor) dalam konfigurasi arsitektur IPOS.
+- Ketergantungan     : src/lib/components/hardware/Keyboard.svelte, src/lib/components/hardware/Cpu.svelte, src/lib/components/hardware/Ram.svelte, src/lib/components/hardware/Ssd.svelte, src/lib/components/hardware/Monitor.svelte
+- Menggunakan Paket  : @threlte/core (^8.6.0), @threlte/extras (^9.21.1), three (^0.185.1)
+- Entry Point        : Dipanggil secara deklaratif oleh `src/lib/components/SimulasiCanvas.svelte`

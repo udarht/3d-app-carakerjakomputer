@@ -1,0 +1,19 @@
+==================================================
+CUSTOM CODEBASE MAP: KUIS GAME KLASIFIKASI HARDWARE
+==================================================
+
+[Komponen: Halaman Permainan Kuis Klasifikasi]
+- File Path          : src/routes/kuis/+page.svelte
+- Tipe/Entitas       : UI Component (Page Controller / Game Engine Logic)
+- Tanggung Jawab     : Mengelola alur permainan drag & drop edukatif (pengacakan kartu via algoritma Fisher-Yates, pelacakan posisi kartu di bank/slot kategori, penanganan event Drag and Drop HTML5, evaluasi skor ketepatan jawaban, umpan balik visual benar/salah, serta penyediaan tombol hint dan reset kuis).
+- Ketergantungan     : src/lib/data/quiz.js (quizItems, categoryDefinitions)
+- Menggunakan Paket  : svelte (^5.56.1)
+- Entry Point        : Route URL: `/kuis`
+
+[Komponen: Dataset Pertanyaan & Definisi Kategori Kuis]
+- File Path          : src/lib/data/quiz.js
+- Tipe/Entitas       : Service / Data Provider (In-Memory Dataset)
+- Tanggung Jawab     : Menyediakan data statis daftar pertanyaan kuis (9 item perangkat keras lengkap dengan ID, nama, kunci jawaban kategori yang benar, petunjuk hint, ikon emoji, serta teks penjelasan komprehensif) dan definisi metadata kategori (Input, Process, Storage, Output beserta judul, subjudul, deskripsi, dan kode warna tema).
+- Ketergantungan     : Tidak Ada
+- Menggunakan Paket  : Tidak Ada
+- Entry Point        : Diimpor dan dikonsumsi langsung oleh `src/routes/kuis/+page.svelte`

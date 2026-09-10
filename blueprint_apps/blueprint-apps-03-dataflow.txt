@@ -1,0 +1,39 @@
+==================================================
+DATA & PROCESS FLOW
+==================================================
+
+[Alur 1: Eksplorasi & Inspeksi 3D Hardware Komputer]
+1. Titik Masuk (Trigger) : Route URL: `/` (Akses halaman utama), interaksi klik tombol kategori (`Semua`, `Input`, `Process`, `Storage`, `Output`), klik daftar perangkat hardware pada bottom dock, klik pemilih model SSD (`m2` / `sata`), dan interaksi kontrol 3D pointer (hover, drag OrbitControls, klik tombol daya monitor, klik tuts keyboard, klik tombol mouse, toggle audio speaker, pause printer).
+2. Pemrosesan Logika    : `src/routes/+page.svelte` mengelola state reaktif terpusat (`selectedId`, `selectedCategory`, `isInfoOpen`, `ssdVariant`). Melakukan filtering koleksi perangkat via derived state `filteredHardware` berdasarkan `selectedCategory`. Props diteruskan ke `src/lib/components/CanvasContainer.svelte` dan `src/lib/components/Scene.svelte` untuk conditional rendering model hardware 3D yang aktif. Masing-masing komponen model hardware 3D (`src/lib/components/hardware/*.svelte`) mengeksekusi loop render frame via `useTask` untuk animasi dinamis (rotasi/getaran) dan menangani event pointerenter/pointerleave/click untuk efek visual real-time (glow, depression, scale).
+3. Interaksi Database   : 
+   - Tabel `hardware_items` (In-Memory `src/lib/data/hardware.js` & `src/lib/hardwareData.ts`): Operasi READ berdasarkan ID hardware yang dipilih serta relasi foreign key `category` ke `hardware_categories.id`.
+   - Tabel `hardware_categories` (In-Memory `src/lib/data/quiz.js` & `src/lib/hardwareData.ts`): Operasi READ untuk metadata dan filtering kategori perangkat.
+   - Catatan Database: Bersifat client-side in-memory static data store tanpa mutasi persistensi SQL/NoSQL eksternal.
+4. Hasil Akhir (Output) : Tampilan kanvas 3D WebGL interaktif dengan model hardware terpilih, kontrol orbit rotasi 360 derajat dan zoom, serta panel drawer informasi yang menyajikan nama, kategori, deskripsi fungsi, spesifikasi, prinsip kerja, dan opsi model SSD.
+
+[Alur 2: Simulasi Alur Kerja Komputer (Siklus IPOS)]
+1. Titik Masuk (Trigger) : Route URL: `/simulasi` (Akses halaman simulasi), input teks instruksi oleh pengguna pada formulir Langkah 1 (Input), klik tombol "Kirim Data ke CPU" (`handleStep1Send`), klik tombol langkah navigasi (Langkah 1 s/d 4), atau klik tombol "Simulasi Ulang" (`resetSimulation`).
+2. Pemrosesan Logika    : `src/routes/simulasi/+page.svelte` bertindak sebagai pengontrol state machine alur IPOS. Melakukan validasi input (`userInput.trim()`) dan pencegahan interaksi ganda (`isBusy`). Mengatur transisi otomatis berwaktu:
+   - Langkah 1 (Input -> Process): Mengaktifkan sinyal bus keyboard ke CPU (`isSignalKbToCpu = true`) selama 1800ms dan menyimpan `processedData`.
+   - Langkah 2 (Process): Mengaktifkan denyut clock cycle CPU dan RAM (`isCpuProcessing = true`, `isRamProcessing = true`) selama 2400ms.
+   - Langkah 3 (Process -> Output): Mengaktifkan sinyal bus CPU ke monitor (`isSignalCpuToMonitor = true`) selama 1800ms dan menampilkan teks hasil olahan pada monitor 3D (`showMonitorText = true`).
+   - Langkah 4 (Storage): Pengguna memicu aksi `handleStep4Save()` -> mengaktifkan sinyal bus RAM ke SSD (`isSignalRamToSsd = true`) selama 1900ms hingga data tersimpan permanen (`ssdSaved = true`).
+   `src/lib/components/SimulasiScene.svelte` mengkalkulasi kurva jalur 3D (`CatmullRomCurve3`) untuk ketiga bus data dan memancarkan animasi partikel biner serta efek neon sirkuit via `useTask`.
+3. Interaksi Database   : 
+   - Tabel `hardware_items` & `hardware_categories`: Operasi READ in-memory untuk pemetaan arsitektur dan penataan posisi hardware IPOS (Keyboard/Input, CPU-RAM/Process, Monitor/Output, SSD/Storage).
+   - In-Memory Simulation State: Operasi WRITE / UPDATE transient state sesi klien (`userInput`, `processedData`, `currentStep`, flag bus sinyal, `ssdSaved`).
+   - Catatan Database: Tidak ada pencatatan ke database server eksternal; seluruh data tersimpan dalam state reaktif memori browser.
+4. Hasil Akhir (Output) : Animasi 3D pergerakan paket data biner melintasi sirkuit bus motherboard, visualisasi interaktif pada hardware (denyut CPU/RAM, teks pada layar monitor, status tersimpan pada SSD), dan kartu narasi edukasi yang berganti sesuai langkah aktif.
+
+[Alur 3: Kuis Game Edukasi Klasifikasi Hardware]
+1. Titik Masuk (Trigger) : Route URL: `/kuis` (Akses halaman kuis), aksi drag and drop kartu perangkat dari Bank Kartu ke dalam 4 slot drop target kategori (`Input`, `Process`, `Storage`, `Output`), klik tombol petunjuk "Hint", klik tombol "Periksa Jawaban" (`checkAnswers`), atau klik tombol "Ulangi Kuis" (`initQuiz`).
+2. Pemrosesan Logika    : `src/routes/kuis/+page.svelte` menjalankan engine kuis klasifikasi:
+   - `initQuiz`: Mengacak urutan kartu pertanyaan dari dataset menggunakan algoritma Fisher-Yates Shuffle.
+   - Event Handler Drag & Drop HTML5 (`handleDragStart`, `handleDragOver`, `handleDrop`, `moveItem`): Mengelola pemindahan objek kartu antar array state (`bankItems` dan `categorySlots[category]`).
+   - `checkAnswers`: Mengiterasi setiap kartu di dalam slot kategori, memvalidasi kecocokan properti `correctCategory` terhadap key slot penempatan, menghitung skor absolut dan persentase nilai akhir (`scorePercent = Math.round((score / total) * 100)`), serta mengaktifkan status evaluasi (`isChecked = true`).
+3. Interaksi Database   : 
+   - Tabel `quiz_items` (In-Memory `src/lib/data/quiz.js`): Operasi READ dataset 9 item kuis (nama, ikon, petunjuk hint, kunci jawaban, dan teks penjelasan komprehensif).
+   - Tabel `hardware_categories` (In-Memory `src/lib/data/quiz.js`): Operasi READ metadata definisi 4 kategori slot target (judul, subjudul, deskripsi, warna tema).
+   - In-Memory Game State: Operasi CREATE / UPDATE state kartu pada slot dan skor evaluasi kuis.
+   - Catatan Database: Data kuis dan hasil evaluasi bersifat in-memory pada sesi klien tanpa persistensi ke DBMS eksternal.
+4. Hasil Akhir (Output) : Kartu kuis dengan indikator visual dinamis (warna hijau/centang jika penempatan benar, warna merah/silang jika salah), ringkasan nilai persentase beserta badge predikat kelulusan, dan kotak penjelasan ilmiah untuk setiap perangkat.
