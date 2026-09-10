@@ -82,18 +82,6 @@
   <header class="top-header">
     <div class="brand-column">
       <div class="brand-row">
-        <!-- Tombol Beranda / Menu Utama Konsisten (Min 44x44 px) -->
-        <button
-          type="button"
-          class="home-nav-btn"
-          onclick={() => (isMenuOpen = true)}
-          title="Buka Menu Utama / Dashboard Pembelajaran"
-          aria-label="Menu Utama Pembelajaran"
-        >
-          <span class="home-btn-icon">🏠</span>
-          <span class="hidden md:inline">Menu Utama</span>
-        </button>
-
         <div class="brand">
           <!-- Logo Pendidikan Kemdikbud / Sobat SMP Strip -->
           <div class="edu-logos">
@@ -104,7 +92,7 @@
           </div>
           <div class="brand-divider"></div>
           <div class="brand-text">
-            <h1 class="brand-title">CARA KERJA KOMPUTER</h1>
+            <h2 class="brand-title">CARA KERJA KOMPUTER</h2>
             <p class="brand-subtitle">Interactive 3D Hardware Exploration</p>
           </div>
         </div>
@@ -117,42 +105,55 @@
       </div>
     </div>
 
-    <!-- Header Right Controls: Mode Toggle, Info & Hint -->
+    <!-- Header Right Controls: Kotak Menu Fitur & Kotak Mode Switcher -->
     <div class="header-right-group">
-      <!-- Tombol Panduan Penggunaan (Min 44x44 px touch-friendly) -->
-      <button
-        type="button"
-        class="guide-nav-btn"
-        onclick={() => (isGuideOpen = true)}
-        title="Buka Panduan Penggunaan Media"
-        aria-label="Panduan Penggunaan Media"
-      >
-        <span class="guide-btn-icon">❓</span>
-        <span>Panduan</span>
-      </button>
+      <!-- Kotak Menu Utama, Panduan, dan Info Media (Disatukan dalam 1 Kotak Kapsul) -->
+      <div class="menu-action-group">
+        <button
+          type="button"
+          class="touch-target menu-item-btn"
+          onclick={() => (isMenuOpen = true)}
+          title="Buka Menu Utama / Dashboard Pembelajaran"
+          aria-label="Menu Utama Pembelajaran"
+        >
+          <span class="menu-item-icon">🏠</span>
+          <span>Menu Utama</span>
+        </button>
 
-      <!-- Tombol Buka Kembali Splash / Info Kurikulum -->
-      <button
-        type="button"
-        class="info-panduan-btn"
-        onclick={() => (showSplash = true)}
-        title="Buka Info Media & Kurikulum Pembelajaran"
-        aria-label="Info Media & Kurikulum"
-      >
-        <span>📖</span>
-        <span class="hidden sm:inline">Info Media</span>
-      </button>
+        <button
+          type="button"
+          class="touch-target menu-item-btn"
+          onclick={() => (isGuideOpen = true)}
+          title="Buka Panduan Penggunaan Media"
+          aria-label="Panduan Penggunaan Media"
+        >
+          <span class="menu-item-icon">❓</span>
+          <span>Panduan</span>
+        </button>
 
+        <button
+          type="button"
+          class="touch-target menu-item-btn"
+          onclick={() => (showSplash = true)}
+          title="Buka Info Media & Kurikulum Pembelajaran"
+          aria-label="Info Media & Kurikulum"
+        >
+          <span class="menu-item-icon">📖</span>
+          <span>Info Media</span>
+        </button>
+      </div>
+
+      <!-- Kotak Mode Switcher -->
       <div class="mode-toggle-group">
-        <a href="/" class="mode-link active">
+        <a href="/" class="touch-target mode-link active">
           <span class="mode-icon">🔍</span>
           <span>Mode Eksplorasi</span>
         </a>
-        <a href="/simulasi" class="mode-link">
+        <a href="/simulasi" class="touch-target mode-link">
           <span class="mode-icon">🚀</span>
           <span>Mode Simulasi</span>
         </a>
-        <a href="/kuis" class="mode-link">
+        <a href="/kuis" class="touch-target mode-link">
           <span class="mode-icon">🧩</span>
           <span>Kuis Game</span>
         </a>
@@ -167,7 +168,7 @@
       {#each categories as cat}
         <button
           type="button"
-          class="cat-tab"
+          class="touch-target cat-tab"
           class:active={selectedCategory === cat}
           class:cat-input={cat === 'Input'}
           class:cat-process={cat === 'Process'}
@@ -195,7 +196,7 @@
         {#each filteredHardware as item}
           <button
             type="button"
-            class="nav-btn"
+            class="touch-target nav-btn"
             class:active={selectedId === item.id}
             class:cat-border-input={item.category === 'Input' && selectedId === item.id}
             class:cat-border-process={item.category === 'Process' && selectedId === item.id}
@@ -253,7 +254,7 @@
         </div>
         <button
           type="button"
-          class="toggle-btn"
+          class="touch-target toggle-btn"
           onclick={() => (isInfoOpen = !isInfoOpen)}
           title={isInfoOpen ? 'Sembunyikan Informasi' : 'Tampilkan Informasi'}
         >
@@ -274,7 +275,7 @@
               <div class="ssd-type-tabs">
                 <button
                   type="button"
-                  class="ssd-type-btn"
+                  class="touch-target ssd-type-btn"
                   class:active={ssdVariant === 'm2'}
                   onclick={() => (ssdVariant = 'm2')}
                 >
@@ -282,7 +283,7 @@
                 </button>
                 <button
                   type="button"
-                  class="ssd-type-btn"
+                  class="touch-target ssd-type-btn"
                   class:active={ssdVariant === 'sata'}
                   onclick={() => (ssdVariant = 'sata')}
                 >
@@ -348,8 +349,8 @@
 
   .viewer-container {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     user-select: none;
   }
@@ -391,99 +392,78 @@
     }
   }
 
-  /* TOP HEADER */
+  /* TOP HEADER NAVBAR (Kunci tinggi presisi 56px / h-14, rata tengah vertikal) */
   .top-header {
     position: absolute;
-    top: 20px;
+    top: 16px;
     left: 24px;
     right: 24px;
+    height: 56px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     pointer-events: none;
     z-index: 10;
+    box-sizing: border-box;
+    padding: 0;
   }
 
   .brand-column {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    justify-content: center;
+    height: 100%;
     pointer-events: none;
+    position: relative;
   }
 
   .brand-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    pointer-events: auto;
-  }
-
-  .home-nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    height: 44px;
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0 16px;
-    border-radius: 9999px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #1e293b;
-    cursor: pointer;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
+    height: 100%;
+    margin: 0;
+    padding: 0;
     pointer-events: auto;
     box-sizing: border-box;
-  }
-
-  .home-nav-btn:hover {
-    background: #0284c7;
-    color: #ffffff;
-    border-color: #0284c7;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.3);
-  }
-
-  .home-btn-icon {
-    font-size: 1.05rem;
   }
 
   .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.9);
-    height: 44px;
-    padding: 0 16px 0 10px;
+    height: 52px;
+    padding: 0 16px 0 8px;
     border-radius: 9999px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.07);
     pointer-events: auto;
     box-sizing: border-box;
+    margin: 0;
   }
 
   .edu-logos {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     background: rgba(241, 245, 249, 0.7);
     padding: 3px 8px;
     border-radius: 9999px;
     border: 1px solid rgba(226, 232, 240, 0.8);
+    height: 36px;
+    box-sizing: border-box;
   }
 
   .edu-logo-img {
-    height: 28px;
+    height: 24px;
+    max-height: 28px;
     width: auto;
-    max-width: 42px;
+    max-width: 36px;
     object-fit: contain;
     transition: transform 0.2s ease;
+    display: block;
   }
 
   .edu-logo-img:hover {
@@ -491,27 +471,40 @@
   }
 
   .logo-sobat {
-    max-width: 58px;
+    max-width: 46px;
   }
 
   .brand-divider {
     width: 1px;
     height: 24px;
     background-color: #cbd5e1;
+    margin: 0 2px;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0;
   }
 
   .brand-title {
     margin: 0;
-    font-size: 1.02rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
     color: #0f172a;
+    line-height: 1.15;
+    white-space: nowrap;
   }
 
   .brand-subtitle {
     margin: 0;
-    font-size: 0.7rem;
+    font-size: 0.58rem;
+    font-weight: 600;
     color: #64748b;
+    line-height: 1;
+    white-space: nowrap;
   }
 
   /* Educational Attribution Badge in Info Drawer */
@@ -553,69 +546,62 @@
   .header-right-group {
     display: flex;
     align-items: center;
+    height: 100%;
     gap: 10px;
-  }
-
-  .guide-nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: linear-gradient(135deg, #0284c7, #4f46e5);
-    color: #ffffff;
-    border: none;
-    height: 44px;
-    min-width: 44px;
-    padding: 0 16px;
-    border-radius: 9999px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
-    transition: all 0.2s ease;
-    pointer-events: auto;
     box-sizing: border-box;
   }
 
-  .guide-nav-btn:hover {
-    background: linear-gradient(135deg, #0369a1, #4338ca);
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4);
-  }
-
-  .guide-nav-btn:active {
-    transform: scale(0.98);
-  }
-
-  .guide-btn-icon {
-    font-size: 0.95rem;
-  }
-
-  .info-panduan-btn {
+  .menu-action-group {
     display: flex;
     align-items: center;
-    gap: 6px;
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.9);
-    height: 44px;
-    min-width: 44px;
+    height: 52px;
+    padding: 3px 6px;
+    border-radius: 9999px;
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.07);
+    pointer-events: auto;
+    box-sizing: border-box;
+    gap: 4px;
+    margin: 0;
+  }
+
+  .menu-item-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 45px;
+    height: 45px;
+    min-width: 45px;
     padding: 0 14px;
+    border: none;
+    background: transparent;
     border-radius: 9999px;
     font-size: 0.82rem;
     font-weight: 700;
-    color: #0284c7;
+    color: #334155;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
-    pointer-events: auto;
+    transition: all 0.2s;
     box-sizing: border-box;
+    white-space: normal;
+    text-align: left;
+    line-height: 1.2;
+    margin: 0;
   }
 
-  .info-panduan-btn:hover {
-    background: #0284c7;
-    color: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.25);
+  .menu-item-btn:hover {
+    color: #0284c7;
+    background: #f1f5f9;
+  }
+
+  .menu-item-btn:active {
+    transform: scale(0.97);
+  }
+
+  .menu-item-icon {
+    font-size: 0.95rem;
   }
 
   .mode-toggle-group {
@@ -624,20 +610,25 @@
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.9);
-    height: 44px;
-    padding: 4px;
+    height: 52px;
+    padding: 3px 6px;
     border-radius: 9999px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.07);
     pointer-events: auto;
     box-sizing: border-box;
+    gap: 4px;
+    margin: 0;
   }
 
   .mode-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    height: 100%;
-    padding: 0 14px;
+    min-height: 45px;
+    height: 45px;
+    min-width: 45px;
+    padding: 0 16px;
     border-radius: 9999px;
     text-decoration: none;
     font-size: 0.82rem;
@@ -645,6 +636,7 @@
     color: #64748b;
     transition: all 0.2s;
     box-sizing: border-box;
+    margin: 0;
   }
 
   .mode-link:hover:not(.active) {
@@ -659,6 +651,9 @@
   }
 
   .interaction-hint {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(226, 232, 240, 0.85);
@@ -673,6 +668,7 @@
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
     pointer-events: auto;
     margin-left: 4px;
+    white-space: nowrap;
   }
 
   .hint-icon {
@@ -715,18 +711,22 @@
   }
 
   .cat-tab {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     background: transparent;
     border: 1px solid transparent;
-    padding: 6px 14px;
+    min-height: 45px;
+    min-width: 45px;
+    padding: 8px 18px;
     border-radius: 9999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #64748b;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #334155;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
   }
 
   .cat-tab:hover:not(.active) {
@@ -789,17 +789,21 @@
 
   .nav-btn {
     position: relative;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
-    padding: 9px 15px;
+    min-height: 45px;
+    min-width: 45px;
+    padding: 8px 18px;
     background: rgba(241, 245, 249, 0.85);
     border: 1px solid rgba(203, 213, 225, 0.6);
     border-radius: 14px;
-    color: #475569;
+    color: #1e293b;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
+    box-sizing: border-box;
   }
 
   .nav-btn:hover {
@@ -952,22 +956,30 @@
   .toggle-btn {
     background: #e2e8f0;
     border: 1px solid #cbd5e1;
-    color: #334155;
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
+    color: #1e293b;
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+    min-height: 45px;
+    border-radius: 12px;
     font-size: 1.2rem;
     line-height: 1;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
+    box-sizing: border-box;
   }
 
   .toggle-btn:hover {
     background: #cbd5e1;
     color: #0f172a;
+    transform: scale(1.05);
+  }
+
+  .toggle-btn:active {
+    transform: scale(0.95);
   }
 
   .card-body {
@@ -1022,15 +1034,21 @@
 
   .ssd-type-btn {
     flex: 1;
-    padding: 8px 10px;
-    font-size: 0.78rem;
+    min-height: 45px;
+    min-width: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    font-size: 0.8rem;
     font-weight: 700;
     border: 1px solid #cbd5e1;
-    border-radius: 8px;
+    border-radius: 10px;
     background: #ffffff;
     color: #475569;
     cursor: pointer;
     transition: all 0.2s;
+    box-sizing: border-box;
   }
 
   .ssd-type-btn:hover:not(.active) {

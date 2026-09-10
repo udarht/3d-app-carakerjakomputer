@@ -139,21 +139,21 @@
           <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80 text-xs">
             <button
               type="button"
-              class="px-3 py-1.5 rounded-lg font-semibold transition-all {activeTab === 'cp-tp' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}"
+              class="touch-target min-h-[45px] px-3.5 py-2.5 rounded-lg font-semibold transition-all cursor-pointer {activeTab === 'cp-tp' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'}"
               onclick={() => (activeTab = 'cp-tp')}
             >
               CP & TP
             </button>
             <button
               type="button"
-              class="px-3 py-1.5 rounded-lg font-semibold transition-all {activeTab === 'indikator' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}"
+              class="touch-target min-h-[45px] px-3.5 py-2.5 rounded-lg font-semibold transition-all cursor-pointer {activeTab === 'indikator' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'}"
               onclick={() => (activeTab = 'indikator')}
             >
               Indikator TP
             </button>
             <button
               type="button"
-              class="px-3 py-1.5 rounded-lg font-semibold transition-all {activeTab === 'materi' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}"
+              class="touch-target min-h-[45px] px-3.5 py-2.5 rounded-lg font-semibold transition-all cursor-pointer {activeTab === 'materi' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'}"
               onclick={() => (activeTab = 'materi')}
             >
               Materi Esensial
@@ -240,7 +240,7 @@
       <button
         type="button"
         onclick={handleStart}
-        class="w-full sm:w-auto min-h-[48px] min-w-[220px] px-8 py-3.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 active:from-sky-700 active:to-indigo-700 text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg shadow-sky-600/25 hover:shadow-xl hover:shadow-sky-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 cursor-pointer group"
+        class="touch-target w-full sm:w-auto min-h-[48px] min-w-[220px] px-8 py-3.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 active:from-sky-700 active:to-indigo-700 text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg shadow-sky-600/25 hover:shadow-xl hover:shadow-sky-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 cursor-pointer group"
       >
         <span>Mulai Belajar</span>
         <svg

@@ -22,12 +22,12 @@
     <!-- SISI KIRI: Tombol Konsisten Kembali ke Beranda & Logo -->
     <!-- ============================================== -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-      <!-- Tombol Beranda / Menu Utama (Min 44 x 44 px) -->
+      <!-- Tombol Beranda / Menu Utama (Min 45 x 45 px) -->
       {#if onOpenHome}
         <button
           type="button"
           onclick={onOpenHome}
-          class="min-h-[44px] min-w-[44px] px-3 sm:px-4 py-2 rounded-2xl bg-slate-100 hover:bg-sky-50 active:bg-sky-100 text-slate-700 hover:text-sky-700 border border-slate-200/80 hover:border-sky-200 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
+          class="touch-target min-h-[45px] min-w-[45px] px-3 sm:px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-sky-50 active:bg-sky-100 text-slate-700 hover:text-sky-700 border border-slate-200/80 hover:border-sky-200 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
           title="Buka Hub Menu Utama / Beranda"
           aria-label="Kembali ke Beranda atau Menu Utama"
         >
@@ -37,7 +37,7 @@
       {:else}
         <a
           href="/"
-          class="min-h-[44px] min-w-[44px] px-3 sm:px-4 py-2 rounded-2xl bg-slate-100 hover:bg-sky-50 active:bg-sky-100 text-slate-700 hover:text-sky-700 border border-slate-200/80 hover:border-sky-200 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer shadow-2xs no-underline"
+          class="touch-target min-h-[45px] min-w-[45px] px-3 sm:px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-sky-50 active:bg-sky-100 text-slate-700 hover:text-sky-700 border border-slate-200/80 hover:border-sky-200 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer shadow-2xs no-underline"
           title="Kembali ke Beranda"
           aria-label="Kembali ke Beranda"
         >
@@ -62,7 +62,7 @@
       <!-- Modul 1: Eksplorasi 3D -->
       <a
         href="/"
-        class="min-h-[40px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all no-underline {pathname === '/'
+        class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all no-underline {pathname === '/'
           ? 'bg-white text-sky-700 shadow-xs border border-sky-100'
           : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'}"
         aria-label="Navigasi ke Modul 1: Eksplorasi 3D Hardware"
@@ -75,7 +75,7 @@
       <!-- Modul 2: Simulasi IPOS -->
       <a
         href="/simulasi"
-        class="min-h-[40px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all no-underline {pathname.startsWith('/simulasi')
+        class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all no-underline {pathname.startsWith('/simulasi')
           ? 'bg-white text-indigo-700 shadow-xs border border-indigo-100'
           : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'}"
         aria-label="Navigasi ke Modul 2: Simulasi Alur Kerja IPOS"
@@ -88,7 +88,7 @@
       <!-- Modul 3: Evaluasi & Kuis -->
       <a
         href="/kuis"
-        class="min-h-[40px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all no-underline {pathname.startsWith('/kuis')
+        class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all no-underline {pathname.startsWith('/kuis')
           ? 'bg-white text-emerald-700 shadow-xs border border-emerald-100'
           : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'}"
         aria-label="Navigasi ke Modul 3: Evaluasi dan Kuis Game"
@@ -103,12 +103,12 @@
     <!-- SISI KANAN: Tombol Panduan -->
     <!-- ============================================== -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-      <!-- Tombol Panduan (Min 44 x 44 px) -->
+      <!-- Tombol Panduan (Min 45 x 45 px) -->
       {#if onOpenGuide}
         <button
           type="button"
           onclick={onOpenGuide}
-          class="h-[44px] min-w-[44px] px-3 sm:px-4 rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 active:from-sky-700 active:to-indigo-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-sky-600/20 hover:shadow-lg hover:shadow-sky-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer box-border"
+          class="touch-target min-h-[45px] min-w-[45px] px-4 py-2.5 rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 active:from-sky-700 active:to-indigo-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-sky-600/20 hover:shadow-lg hover:shadow-sky-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer box-border"
           title="Buka Panduan Interaktif Penggunaan Media"
           aria-label="Buka Panduan Penggunaan Media"
         >
@@ -123,7 +123,7 @@
   <div class="flex sm:hidden items-center justify-around gap-1 mt-2 pt-2 border-t border-slate-200/70">
     <a
       href="/"
-      class="min-h-[44px] flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-xs font-bold transition-all no-underline {pathname === '/'
+      class="touch-target min-h-[45px] min-w-[45px] flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all no-underline {pathname === '/'
         ? 'bg-sky-50 text-sky-700 border border-sky-200 font-extrabold'
         : 'text-slate-600 hover:text-slate-900'}"
       aria-label="Modul 1: Eksplorasi 3D"
@@ -133,7 +133,7 @@
     </a>
     <a
       href="/simulasi"
-      class="min-h-[44px] flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-xs font-bold transition-all no-underline {pathname.startsWith('/simulasi')
+      class="touch-target min-h-[45px] min-w-[45px] flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all no-underline {pathname.startsWith('/simulasi')
         ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 font-extrabold'
         : 'text-slate-600 hover:text-slate-900'}"
       aria-label="Modul 2: Simulasi IPOS"
@@ -143,7 +143,7 @@
     </a>
     <a
       href="/kuis"
-      class="min-h-[44px] flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-xs font-bold transition-all no-underline {pathname.startsWith('/kuis')
+      class="touch-target min-h-[45px] min-w-[45px] flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all no-underline {pathname.startsWith('/kuis')
         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold'
         : 'text-slate-600 hover:text-slate-900'}"
       aria-label="Modul 3: Kuis Game"

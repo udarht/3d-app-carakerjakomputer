@@ -218,22 +218,10 @@
 <!-- Main Menu Dashboard Modal -->
 <MainMenu isOpen={isMenuOpen} onClose={() => (isMenuOpen = false)} />
 
-<div class="min-h-screen bg-slate-100 text-slate-800 font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
+<div class="w-full h-full overflow-y-auto bg-slate-100 text-slate-900 font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
   <!-- TOP NAVIGATION HEADER (Light theme with subtle blur and border, consistent with 3D Viewer) -->
-  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/90 px-3 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-3 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 shadow-xs">
     <div class="flex items-center gap-2.5 sm:gap-3">
-      <!-- Tombol Beranda / Menu Utama Konsisten (Min 44x44 px) -->
-      <button
-        type="button"
-        onclick={() => (isMenuOpen = true)}
-        class="min-h-[44px] min-w-[44px] px-3 sm:px-4 py-2 rounded-2xl bg-white hover:bg-sky-50 active:bg-sky-100 text-slate-700 hover:text-sky-700 border border-slate-200 hover:border-sky-200 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer shadow-xs"
-        title="Buka Menu Utama / Dashboard Pembelajaran"
-        aria-label="Menu Utama Pembelajaran"
-      >
-        <span class="text-base sm:text-lg">🏠</span>
-        <span class="hidden md:inline">Menu Utama</span>
-      </button>
-
       <!-- Education Logos Strip -->
       <div class="hidden sm:flex items-center gap-1.5 bg-slate-100/90 border border-slate-200/80 rounded-full px-2.5 py-1 shadow-sm">
         <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-6 w-auto object-contain hover:scale-110 transition-transform" title="Tut Wuri Handayani" />
@@ -250,39 +238,52 @@
       </div>
     </div>
 
-    <!-- Header Controls: Mode Navigation Switcher & Panduan Button -->
+    <!-- Header Controls: Kotak Menu Fitur & Kotak Mode Switcher -->
     <div class="flex items-center gap-2.5">
-      <!-- Tombol Panduan Penggunaan (Tinggi 44px) -->
-      <button
-        type="button"
-        onclick={() => (isGuideOpen = true)}
-        class="h-[44px] min-w-[44px] px-4 rounded-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-sky-600/20 hover:shadow-lg hover:shadow-sky-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer box-border"
-        title="Buka Panduan Penggunaan Media"
-        aria-label="Panduan Penggunaan Media"
-      >
-        <span class="text-sm">❓</span>
-        <span>Panduan</span>
-      </button>
+      <!-- Kotak Menu Utama dan Panduan (Disatukan dalam 1 Kotak Kapsul) -->
+      <div class="min-h-[48px] flex items-center gap-1 bg-white p-1 rounded-full border border-slate-200/90 shadow-sm box-border">
+        <button
+          type="button"
+          onclick={() => (isMenuOpen = true)}
+          class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 rounded-full text-slate-700 hover:text-sky-700 hover:bg-slate-100/80 transition-all text-xs font-bold cursor-pointer"
+          title="Buka Menu Utama / Dashboard Pembelajaran"
+          aria-label="Menu Utama Pembelajaran"
+        >
+          <span class="text-sm">🏠</span>
+          <span>Menu Utama</span>
+        </button>
+
+        <button
+          type="button"
+          onclick={() => (isGuideOpen = true)}
+          class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 rounded-full text-slate-700 hover:text-sky-700 hover:bg-slate-100/80 transition-all text-xs font-bold cursor-pointer"
+          title="Buka Panduan Penggunaan Media"
+          aria-label="Panduan Penggunaan Media"
+        >
+          <span class="text-sm">❓</span>
+          <span>Panduan</span>
+        </button>
+      </div>
 
       <!-- Mode Navigation Switcher -->
-      <div class="h-[44px] flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-full border border-slate-300/80 text-sm shadow-inner box-border">
+      <div class="min-h-[48px] flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-full border border-slate-300/80 text-sm shadow-inner box-border">
         <a
           href="/"
-          class="h-full flex items-center gap-1.5 px-3.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold box-border"
+          class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold box-border"
         >
           <span>🔍</span>
           <span class="hidden sm:inline">Mode Eksplorasi</span>
         </a>
         <a
           href="/simulasi"
-          class="h-full flex items-center gap-1.5 px-3.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold box-border"
+          class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold box-border"
         >
           <span>🚀</span>
           <span class="hidden sm:inline">Mode Simulasi</span>
         </a>
         <a
           href="/kuis"
-          class="h-full flex items-center gap-1.5 px-4 rounded-full bg-slate-900 text-white font-bold shadow-md text-xs transition-all box-border"
+          class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 rounded-full bg-slate-900 text-white font-bold shadow-md text-xs transition-all box-border"
         >
           <span>🧩</span>
           <span>Kuis Game</span>
@@ -304,14 +305,14 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Action Buttons (Touch targets >= 45px) -->
       <div class="flex items-center gap-3">
         <button
           type="button"
           onclick={initQuiz}
-          class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 text-slate-700 border border-slate-300 text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+          class="touch-target min-h-[45px] min-w-[45px] px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 text-slate-800 hover:text-slate-950 border border-slate-300 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer box-border"
         >
-          <span>🔄</span>
+          <span class="text-base">🔄</span>
           <span>Ulangi Kuis</span>
         </button>
 
@@ -319,9 +320,9 @@
           type="button"
           onclick={checkAnswers}
           disabled={totalPlaced === 0}
-          class="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-bold text-xs sm:text-sm transition-all shadow-md shadow-sky-600/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2 cursor-pointer"
+          class="touch-target min-h-[45px] min-w-[45px] px-6 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-extrabold text-xs sm:text-sm transition-all shadow-md shadow-sky-600/25 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2 cursor-pointer box-border"
         >
-          <span>✓</span>
+          <span class="text-base">✓</span>
           <span>Periksa Jawaban</span>
         </button>
       </div>
@@ -389,7 +390,7 @@
             <button
               type="button"
               onclick={() => (reviewFilter = 'all')}
-              class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer {reviewFilter === 'all'
+              class="touch-target min-h-[45px] px-3.5 py-2.5 rounded-lg font-bold transition-all cursor-pointer {reviewFilter === 'all'
                 ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
                 : 'text-slate-600 hover:text-slate-900'}"
             >
@@ -398,7 +399,7 @@
             <button
               type="button"
               onclick={() => (reviewFilter = 'wrong')}
-              class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1 {reviewFilter === 'wrong'
+              class="touch-target min-h-[45px] px-3.5 py-2.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1 {reviewFilter === 'wrong'
                 ? 'bg-rose-600 text-white shadow-xs'
                 : 'text-rose-700 hover:bg-rose-50'}"
             >
@@ -512,7 +513,7 @@
               draggable="true"
               ondragstart={(e) => handleDragStart(e, item.id, null)}
               ondragend={handleDragEnd}
-              class="group relative flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 hover:border-sky-400 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing transition-all select-none"
+              class="touch-target group relative flex items-center gap-2.5 min-h-[45px] px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 hover:border-sky-400 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing transition-all select-none box-border"
               class:opacity-40={draggedItemId === item.id}
             >
               <span class="text-xl group-hover:scale-110 transition-transform">{item.icon}</span>
@@ -524,7 +525,8 @@
                   e.stopPropagation();
                   showHintId = showHintId === item.id ? null : item.id;
                 }}
-                class="ml-1 text-slate-400 hover:text-sky-600 text-xs px-1.5 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors"
+                class="touch-target ml-1 text-slate-500 hover:text-sky-700 text-xs min-h-[45px] min-w-[45px] px-3 rounded-lg bg-slate-100 hover:bg-sky-100 border border-slate-200 hover:border-sky-300 transition-colors flex items-center justify-center cursor-pointer box-border"
+                aria-label={`Petunjuk fungsi ${item.name}`}
               >
                 ❓
               </button>
@@ -603,7 +605,7 @@
                   draggable="true"
                   ondragstart={(e) => handleDragStart(e, item.id, cat.id)}
                   ondragend={handleDragEnd}
-                  class="rounded-xl p-3 border shadow-sm transition-all select-none cursor-grab active:cursor-grabbing relative"
+                  class="touch-target min-h-[45px] w-full rounded-xl p-3 border shadow-sm transition-all select-none cursor-grab active:cursor-grabbing relative box-border"
                   style={!isChecked
                     ? 'background-color: #ffffff; border-color: #cbd5e1;'
                     : isCorrect
@@ -612,7 +614,7 @@
                   class:opacity-40={draggedItemId === item.id}
                 >
                   <!-- Baris Atas Item -->
-                  <div class="flex items-center justify-between gap-2">
+                  <div class="w-full flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
                       <span class="text-xl">{item.icon}</span>
                       <span class="font-bold text-xs sm:text-sm text-slate-900">{item.name}</span>
@@ -632,12 +634,13 @@
                         {/if}
                       {/if}
 
-                      <!-- Tombol Kembalikan ke Bank -->
+                      <!-- Tombol Kembalikan ke Bank (Touch target min 45x45 px) -->
                       <button
                         type="button"
                         onclick={() => moveItem(item.id, 'bank')}
                         title="Keluarkan dari kotak ini"
-                        class="text-slate-400 hover:text-rose-600 p-1 rounded-md hover:bg-slate-100 transition-colors text-xs"
+                        class="touch-target min-h-[45px] min-w-[45px] text-slate-500 hover:text-rose-600 p-2.5 rounded-xl hover:bg-rose-50 active:bg-rose-100 transition-colors text-sm flex items-center justify-center cursor-pointer border border-transparent hover:border-rose-200 box-border"
+                        aria-label={`Keluarkan ${item.name} dari kotak`}
                       >
                         ✕
                       </button>

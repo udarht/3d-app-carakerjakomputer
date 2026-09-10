@@ -75,11 +75,11 @@
           </div>
         </div>
 
-        <!-- Tombol Silang [✕] (Min 44x44 px) -->
+        <!-- Tombol Silang [✕] (Min 45x45 px) -->
         <button
           type="button"
           onclick={handleClose}
-          class="min-w-[44px] min-h-[44px] w-11 h-11 rounded-2xl bg-white/10 hover:bg-rose-500/80 active:bg-rose-600 text-white/80 hover:text-white flex items-center justify-center text-lg font-bold transition-all cursor-pointer border border-white/10 shadow-sm"
+          class="touch-target min-w-[45px] min-h-[45px] w-12 h-12 rounded-2xl bg-white/10 hover:bg-rose-500/80 active:bg-rose-600 text-white/80 hover:text-white flex items-center justify-center text-lg font-bold transition-all cursor-pointer border border-white/10 shadow-sm"
           title="Tutup Panduan (Esc)"
           aria-label="Tutup Panduan"
         >
@@ -92,7 +92,7 @@
         <!-- Tab 1 -->
         <button
           type="button"
-          class="min-h-[44px] px-4 py-2.5 rounded-t-2xl font-bold text-xs sm:text-sm flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap {activeTab === '3d'
+          class="touch-target min-h-[45px] px-4 py-3 rounded-t-2xl font-bold text-xs sm:text-sm flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap {activeTab === '3d'
             ? 'bg-white text-sky-700 border-sky-600 shadow-xs'
             : 'text-slate-600 hover:text-slate-900 border-transparent hover:bg-white/50'}"
           onclick={() => (activeTab = '3d')}
@@ -104,7 +104,7 @@
         <!-- Tab 2 -->
         <button
           type="button"
-          class="min-h-[44px] px-4 py-2.5 rounded-t-2xl font-bold text-xs sm:text-sm flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap {activeTab === 'ipos'
+          class="touch-target min-h-[45px] px-4 py-3 rounded-t-2xl font-bold text-xs sm:text-sm flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap {activeTab === 'ipos'
             ? 'bg-white text-indigo-700 border-indigo-600 shadow-xs'
             : 'text-slate-600 hover:text-slate-900 border-transparent hover:bg-white/50'}"
           onclick={() => (activeTab = 'ipos')}
@@ -116,7 +116,7 @@
         <!-- Tab 3 -->
         <button
           type="button"
-          class="min-h-[44px] px-4 py-2.5 rounded-t-2xl font-bold text-xs sm:text-sm flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap {activeTab === 'kuis'
+          class="touch-target min-h-[45px] px-4 py-3 rounded-t-2xl font-bold text-xs sm:text-sm flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap {activeTab === 'kuis'
             ? 'bg-white text-emerald-700 border-emerald-600 shadow-xs'
             : 'text-slate-600 hover:text-slate-900 border-transparent hover:bg-white/50'}"
           onclick={() => (activeTab = 'kuis')}
@@ -341,11 +341,11 @@
           💡 Tips: Anda dapat menekan tombol <kbd class="px-1.5 py-0.5 rounded-md bg-white border border-slate-300 font-mono text-[11px] text-slate-700 shadow-xs">Esc</kbd> atau klik di luar untuk menutup.
         </span>
 
-        <!-- Tombol Penutup "Saya Mengerti, Lanjutkan" (Min height 44px) -->
+        <!-- Tombol Penutup "Saya Mengerti, Lanjutkan" (Min height 45px) -->
         <button
           type="button"
           onclick={handleClose}
-          class="w-full sm:w-auto min-h-[44px] px-6 py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 active:from-sky-700 active:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-md shadow-sky-600/20 hover:shadow-lg hover:shadow-sky-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          class="touch-target w-full sm:w-auto min-h-[45px] px-6 py-3 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 active:from-sky-700 active:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-md shadow-sky-600/20 hover:shadow-lg hover:shadow-sky-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           <span>Saya Mengerti, Lanjutkan</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">

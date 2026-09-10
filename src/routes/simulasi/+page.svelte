@@ -189,18 +189,6 @@
   <!-- TOP HEADER -->
   <header class="top-header">
     <div class="brand-row">
-      <!-- Tombol Beranda / Menu Utama Konsisten (Min 44x44 px) -->
-      <button
-        type="button"
-        class="home-nav-btn"
-        onclick={() => (isMenuOpen = true)}
-        title="Buka Menu Utama / Dashboard Pembelajaran"
-        aria-label="Menu Utama Pembelajaran"
-      >
-        <span class="home-btn-icon">🏠</span>
-        <span class="hidden md:inline">Menu Utama</span>
-      </button>
-
       <div class="brand">
         <!-- Logo Pendidikan Kemdikbud / Sobat SMP Strip -->
         <div class="edu-logos">
@@ -217,31 +205,44 @@
       </div>
     </div>
 
-    <!-- Right Header Controls: Mode Toggle & Panduan -->
+    <!-- Right Header Controls: Kotak Menu Fitur & Kotak Mode Switcher -->
     <div class="header-right-group">
-      <!-- Tombol Panduan Penggunaan (Min 44x44 px) -->
-      <button
-        type="button"
-        class="guide-nav-btn"
-        onclick={() => (isGuideOpen = true)}
-        title="Buka Panduan Penggunaan Media"
-        aria-label="Panduan Penggunaan Media"
-      >
-        <span class="guide-btn-icon">❓</span>
-        <span>Panduan</span>
-      </button>
+      <!-- Kotak Menu Utama dan Panduan (Disatukan dalam 1 Kotak Kapsul) -->
+      <div class="menu-action-group">
+        <button
+          type="button"
+          class="touch-target menu-item-btn"
+          onclick={() => (isMenuOpen = true)}
+          title="Buka Menu Utama / Dashboard Pembelajaran"
+          aria-label="Menu Utama Pembelajaran"
+        >
+          <span class="menu-item-icon">🏠</span>
+          <span>Menu Utama</span>
+        </button>
+
+        <button
+          type="button"
+          class="touch-target menu-item-btn"
+          onclick={() => (isGuideOpen = true)}
+          title="Buka Panduan Penggunaan Media"
+          aria-label="Panduan Penggunaan Media"
+        >
+          <span class="menu-item-icon">❓</span>
+          <span>Panduan</span>
+        </button>
+      </div>
 
       <!-- Mode Toggle Switch -->
       <div class="mode-toggle-group">
-        <a href="/" class="mode-link">
+        <a href="/" class="touch-target mode-link">
           <span class="mode-icon">🔍</span>
           <span>Mode Eksplorasi</span>
         </a>
-        <a href="/simulasi" class="mode-link active">
+        <a href="/simulasi" class="touch-target mode-link active">
           <span class="mode-icon">🚀</span>
           <span>Mode Simulasi</span>
         </a>
-        <a href="/kuis" class="mode-link">
+        <a href="/kuis" class="touch-target mode-link">
           <span class="mode-icon">🧩</span>
           <span>Kuis Game</span>
         </a>
@@ -254,7 +255,7 @@
     <div class="step-tracker">
       <button
         type="button"
-        class="tracker-node"
+        class="touch-target tracker-node"
         class:active={currentStep === 1}
         class:done={currentStep > 1}
         onclick={() => (currentStep = 1)}
@@ -270,7 +271,7 @@
 
       <button
         type="button"
-        class="tracker-node"
+        class="touch-target tracker-node"
         class:active={currentStep === 2}
         class:done={currentStep > 2}
         onclick={() => (currentStep = 2)}
@@ -286,7 +287,7 @@
 
       <button
         type="button"
-        class="tracker-node"
+        class="touch-target tracker-node"
         class:active={currentStep === 3}
         class:done={currentStep > 3}
         onclick={() => (currentStep = 3)}
@@ -302,7 +303,7 @@
 
       <button
         type="button"
-        class="tracker-node"
+        class="touch-target tracker-node"
         class:active={currentStep === 4}
         class:done={ssdSaved}
         onclick={() => (currentStep = 4)}
@@ -325,7 +326,7 @@
       </div>
       <button
         type="button"
-        class="reset-btn"
+        class="touch-target reset-btn"
         onclick={resetSimulation}
         title="Ulangi dari Langkah 1"
       >
@@ -352,7 +353,7 @@
             />
             <button
               type="button"
-              class="action-btn btn-input"
+              class="touch-target action-btn btn-input"
               onclick={handleStep1Send}
               disabled={isBusy || !userInput.trim()}
             >
@@ -388,7 +389,7 @@
           <div class="btn-row">
             <button
               type="button"
-              class="action-btn btn-process"
+              class="touch-target action-btn btn-process"
               onclick={startStep2Process}
               disabled={isBusy}
             >
@@ -400,7 +401,7 @@
             </button>
             <button
               type="button"
-              class="action-btn btn-next"
+              class="touch-target action-btn btn-next"
               onclick={() => {
                 currentStep = 3;
                 startStep3Output();
@@ -431,7 +432,7 @@
           <div class="btn-row">
             <button
               type="button"
-              class="action-btn btn-output"
+              class="touch-target action-btn btn-output"
               onclick={startStep3Output}
               disabled={isBusy}
             >
@@ -443,7 +444,7 @@
             </button>
             <button
               type="button"
-              class="action-btn btn-next"
+              class="touch-target action-btn btn-next"
               onclick={() => (currentStep = 4)}
               disabled={isBusy}
             >
@@ -477,7 +478,7 @@
 
             <button
               type="button"
-              class="action-btn btn-storage"
+              class="touch-target action-btn btn-storage"
               onclick={handleStep4Save}
               disabled={isBusy || ssdSaved}
             >
@@ -543,8 +544,8 @@
 
   .simulation-container {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     user-select: none;
   }
@@ -586,90 +587,68 @@
     }
   }
 
-  /* TOP HEADER */
+  /* TOP HEADER NAVBAR (Kunci tinggi presisi 56px / h-14, rata tengah vertikal) */
   .top-header {
     position: absolute;
-    top: 20px;
+    top: 16px;
     left: 24px;
     right: 24px;
+    height: 56px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     pointer-events: none;
     z-index: 10;
+    box-sizing: border-box;
+    padding: 0;
   }
 
   .brand-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    pointer-events: auto;
-  }
-
-  .home-nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    height: 44px;
-    min-width: 44px;
-    padding: 0 16px;
-    border-radius: 9999px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #1e293b;
-    cursor: pointer;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
+    height: 100%;
+    margin: 0;
+    padding: 0;
     pointer-events: auto;
     box-sizing: border-box;
-  }
-
-  .home-nav-btn:hover {
-    background: #0284c7;
-    color: #ffffff;
-    border-color: #0284c7;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.3);
-  }
-
-  .home-btn-icon {
-    font-size: 1.05rem;
   }
 
   .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.9);
-    height: 44px;
-    padding: 0 16px 0 10px;
+    height: 52px;
+    padding: 0 16px 0 8px;
     border-radius: 9999px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.07);
     pointer-events: auto;
     box-sizing: border-box;
+    margin: 0;
   }
 
   .edu-logos {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     background: rgba(241, 245, 249, 0.7);
     padding: 3px 8px;
     border-radius: 9999px;
     border: 1px solid rgba(226, 232, 240, 0.8);
+    height: 36px;
+    box-sizing: border-box;
   }
 
   .edu-logo-img {
-    height: 28px;
+    height: 24px;
+    max-height: 28px;
     width: auto;
-    max-width: 42px;
+    max-width: 36px;
     object-fit: contain;
     transition: transform 0.2s ease;
+    display: block;
   }
 
   .edu-logo-img:hover {
@@ -677,66 +656,100 @@
   }
 
   .logo-sobat {
-    max-width: 58px;
+    max-width: 46px;
   }
 
   .brand-divider {
     width: 1px;
     height: 24px;
     background-color: #cbd5e1;
+    margin: 0 2px;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0;
   }
 
   .brand-title {
     margin: 0;
-    font-size: 0.98rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
     color: #0f172a;
+    line-height: 1.15;
+    white-space: nowrap;
   }
 
   .brand-subtitle {
     margin: 0;
-    font-size: 0.72rem;
+    font-size: 0.58rem;
+    font-weight: 600;
     color: #64748b;
+    line-height: 1;
+    white-space: nowrap;
   }
 
   .header-right-group {
     display: flex;
     align-items: center;
+    height: 100%;
     gap: 10px;
-  }
-
-  .guide-nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: linear-gradient(135deg, #0284c7, #4f46e5);
-    color: #ffffff;
-    border: none;
-    height: 44px;
-    min-width: 44px;
-    padding: 0 16px;
-    border-radius: 9999px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
-    transition: all 0.2s ease;
-    pointer-events: auto;
     box-sizing: border-box;
   }
 
-  .guide-nav-btn:hover {
-    background: linear-gradient(135deg, #0369a1, #4338ca);
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4);
+  .menu-action-group {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    height: 52px;
+    padding: 3px 6px;
+    border-radius: 9999px;
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.07);
+    pointer-events: auto;
+    box-sizing: border-box;
+    gap: 4px;
+    margin: 0;
   }
 
-  .guide-nav-btn:active {
-    transform: scale(0.98);
+  .menu-item-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 45px;
+    height: 45px;
+    min-width: 45px;
+    padding: 0 14px;
+    border: none;
+    background: transparent;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    white-space: normal;
+    text-align: left;
+    line-height: 1.2;
+    margin: 0;
   }
 
-  .guide-btn-icon {
+  .menu-item-btn:hover {
+    color: #0284c7;
+    background: #f1f5f9;
+  }
+
+  .menu-item-btn:active {
+    transform: scale(0.97);
+  }
+
+  .menu-item-icon {
     font-size: 0.95rem;
   }
 
@@ -747,20 +760,25 @@
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.9);
-    height: 44px;
-    padding: 4px;
+    height: 52px;
+    padding: 3px 6px;
     border-radius: 9999px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.07);
     pointer-events: auto;
     box-sizing: border-box;
+    gap: 4px;
+    margin: 0;
   }
 
   .mode-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    height: 100%;
-    padding: 0 14px;
+    min-height: 45px;
+    height: 45px;
+    min-width: 45px;
+    padding: 0 16px;
     border-radius: 9999px;
     text-decoration: none;
     font-size: 0.82rem;
@@ -768,6 +786,7 @@
     color: #64748b;
     transition: all 0.2s;
     box-sizing: border-box;
+    margin: 0;
   }
 
   .mode-link:hover:not(.active) {
@@ -804,15 +823,19 @@
   }
 
   .tracker-node {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 4px 8px;
+    min-height: 45px;
+    min-width: 45px;
+    padding: 6px 14px;
     border-radius: 9999px;
     transition: all 0.2s;
+    box-sizing: border-box;
   }
 
   .tracker-node:hover {
@@ -820,16 +843,16 @@
   }
 
   .node-badge {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     background: #e2e8f0;
-    color: #64748b;
+    color: #334155;
     transition: all 0.25s;
   }
 
@@ -840,14 +863,14 @@
   }
 
   .node-title {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    color: #475569;
+    color: #1e293b;
   }
 
   .node-device {
-    font-size: 0.65rem;
-    color: #94a3b8;
+    font-size: 0.68rem;
+    color: #64748b;
   }
 
   .tracker-node.active .node-badge.badge-input {
@@ -905,7 +928,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 18px;
+    padding: 12px 18px;
     background: #f8fafc;
     border-bottom: 1px solid #e2e8f0;
   }
@@ -925,13 +948,20 @@
   .reset-btn {
     background: #e2e8f0;
     border: 1px solid #cbd5e1;
-    color: #475569;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 4px 10px;
+    color: #1e293b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    min-height: 45px;
+    min-width: 45px;
+    padding: 6px 16px;
     border-radius: 9999px;
     cursor: pointer;
     transition: all 0.2s;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
   }
 
   .reset-btn:hover {
@@ -951,7 +981,7 @@
 
   .step-instruction {
     font-size: 0.84rem;
-    color: #334155;
+    color: #1e293b;
     line-height: 1.4;
   }
 
@@ -969,12 +999,14 @@
   .text-input {
     width: 100%;
     box-sizing: border-box;
+    min-height: 45px;
     padding: 10px 14px;
     font-size: 0.88rem;
     border: 1.5px solid #cbd5e1;
     border-radius: 10px;
     outline: none;
     transition: all 0.2s;
+    color: #0f172a;
   }
 
   .text-input:focus {
@@ -983,18 +1015,21 @@
   }
 
   .action-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 16px;
+    min-height: 45px;
+    min-width: 45px;
+    padding: 10px 18px;
     border: none;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
     color: #ffffff;
+    box-sizing: border-box;
   }
 
   .action-btn:hover:not(:disabled) {

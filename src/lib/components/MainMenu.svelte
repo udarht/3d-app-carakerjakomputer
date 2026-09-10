@@ -92,11 +92,11 @@
             <span class="text-xs font-semibold text-sky-200 border-l border-white/20 pl-2 ml-0.5">Fase D SMP</span>
           </div>
 
-          <!-- Close Button [✕] (Min 44x44 px) -->
+          <!-- Close Button [✕] (Min 45x45 px) -->
           <button
             type="button"
             onclick={onClose}
-            class="min-w-[44px] min-h-[44px] w-11 h-11 rounded-2xl bg-white/10 hover:bg-rose-500/80 active:bg-rose-600 text-white/80 hover:text-white flex items-center justify-center text-lg font-bold transition-all cursor-pointer border border-white/10"
+            class="touch-target min-w-[45px] min-h-[45px] w-12 h-12 rounded-2xl bg-white/10 hover:bg-rose-500/80 active:bg-rose-600 text-white/80 hover:text-white flex items-center justify-center text-lg font-bold transition-all cursor-pointer border border-white/10"
             title="Tutup Menu Utama (Esc)"
             aria-label="Tutup Menu Utama"
           >
@@ -163,7 +163,7 @@
               <a
                 href={mod.href}
                 onclick={() => handleCardClick(mod.href)}
-                class="min-h-[48px] w-full px-5 py-3 rounded-2xl bg-gradient-to-r {mod.buttonGrad} text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all no-underline cursor-pointer group-hover:scale-[1.02] active:scale-[0.98]"
+                class="touch-target min-h-[48px] w-full px-5 py-3 rounded-2xl bg-gradient-to-r {mod.buttonGrad} text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all no-underline cursor-pointer group-hover:scale-[1.02] active:scale-[0.98]"
                 aria-label="Mulai {mod.title}"
               >
                 <span>Buka Modul</span>
