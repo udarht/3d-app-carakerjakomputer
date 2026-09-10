@@ -7,6 +7,7 @@
   import Cpu from './hardware/Cpu.svelte';
   import Ram from './hardware/Ram.svelte';
   import Ssd from './hardware/Ssd.svelte';
+  import Gpu from './hardware/Gpu.svelte';
   import Harddisk from './hardware/Harddisk.svelte';
   import Speaker from './hardware/Speaker.svelte';
   import Printer from './hardware/Printer.svelte';
@@ -14,11 +15,15 @@
   let {
     selectedId = 'monitor',
     ssdVariant = 'm2',
-    onVariantChange
+    gpuVariant = 'dedicated',
+    onVariantChange,
+    onGpuVariantChange
   }: {
     selectedId: string;
     ssdVariant?: 'm2' | 'sata';
+    gpuVariant?: 'integrated' | 'dedicated';
     onVariantChange?: (v: 'm2' | 'sata') => void;
+    onGpuVariantChange?: (v: 'integrated' | 'dedicated') => void;
   } = $props();
 </script>
 
@@ -81,6 +86,8 @@
     <Cpu />
   {:else if selectedId === 'ram'}
     <Ram />
+  {:else if selectedId === 'gpu'}
+    <Gpu {gpuVariant} onVariantChange={onGpuVariantChange} />
   {:else if selectedId === 'ssd'}
     <Ssd {ssdVariant} {onVariantChange} />
   {:else if selectedId === 'harddisk'}

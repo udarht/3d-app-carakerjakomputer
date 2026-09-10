@@ -71,6 +71,21 @@ export const HARDWARE_LIST: HardwareItem[] = [
     workingPrinciple: 'Menggunakan jutaan pasangan transistor dan kapasitor mikro untuk menyimpan bit 1 atau 0 sementara waktu. Memerlukan refresh daya terus-menerus agar muatan tidak hilang (volatile).'
   },
   {
+    id: 'gpu',
+    name: 'GPU (Graphics Processing Unit)',
+    category: 'Processing & Memory',
+    icon: '🎮',
+    shortDesc: 'Perangkat pemrosesan khusus pengolah grafik visual dan rendering 3D.',
+    description: 'Graphics Processing Unit (GPU) adalah prosesor khusus dengan ribuan core pemrosesan paralel yang dirancang khusus untuk mempercepat komputasi grafis 3D, rendering frame ke monitor, dan pengolahan citra/video intensif.',
+    specs: [
+      { label: 'Tipe Varian', value: 'Integrated (iGPU) / Dedicated (dGPU)' },
+      { label: 'VRAM', value: 'Shared RAM s.d 24GB GDDR6X' },
+      { label: 'Interface Bus', value: 'PCIe 4.0 / 5.0 x16' },
+      { label: 'Display Output', value: 'HDMI 2.1, DisplayPort 2.1' }
+    ],
+    workingPrinciple: 'Menerima data geometri instruksi visual dari CPU, melakukan kalkulasi shading, tekstur, dan lighting ribuan piksel secara paralel, lalu menghasilkan frame buffer ke layar monitor.'
+  },
+  {
     id: 'ssd',
     name: 'SSD (NVMe / SATA)',
     category: 'Storage',

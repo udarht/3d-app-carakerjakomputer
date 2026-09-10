@@ -14,6 +14,7 @@
   let selectedCategory = $state('Semua');
   let isInfoOpen = $state(true);
   let ssdVariant = $state<'m2' | 'sata'>('m2');
+  let gpuVariant = $state<'integrated' | 'dedicated'>('dedicated');
 
   const categories = ['Semua', 'Input', 'Process', 'Storage', 'Output'];
 
@@ -58,7 +59,13 @@
   <!-- 3D Canvas Background View -->
   <div class="canvas-area">
     {#if isMounted}
-      <CanvasContainer {selectedId} {ssdVariant} onVariantChange={(v) => (ssdVariant = v)} />
+      <CanvasContainer
+        {selectedId}
+        {ssdVariant}
+        {gpuVariant}
+        onVariantChange={(v) => (ssdVariant = v)}
+        onGpuVariantChange={(v) => (gpuVariant = v)}
+      />
     {:else}
       <div class="loading-state">
         <div class="spinner"></div>
@@ -294,6 +301,35 @@
                 {ssdVariant === 'm2'
                   ? 'Model chip PCIe Gen4/5 kecepatan transfer tinggi (3000-7000+ MB/s)'
                   : 'Model form-factor 2.5 inci SATA kecepatan standar (550 MB/s)'}
+              </span>
+            </div>
+          {/if}
+
+          {#if selectedId === 'gpu'}
+            <div class="section-block gpu-model-select">
+              <h3 class="section-title">🔧 Tipe / Varian GPU</h3>
+              <div class="gpu-type-tabs">
+                <button
+                  type="button"
+                  class="touch-target gpu-type-btn"
+                  class:active={gpuVariant === 'integrated'}
+                  onclick={() => (gpuVariant = 'integrated')}
+                >
+                  🧩 Integrated (iGPU)
+                </button>
+                <button
+                  type="button"
+                  class="touch-target gpu-type-btn"
+                  class:active={gpuVariant === 'dedicated'}
+                  onclick={() => (gpuVariant = 'dedicated')}
+                >
+                  🎮 Dedicated (dGPU)
+                </button>
+              </div>
+              <span class="gpu-type-note">
+                {gpuVariant === 'integrated'
+                  ? 'Chip terintegrasi di prosesor/motherboard, berbagi RAM utama, hemat daya.'
+                  : 'Kartu ekspansi PCIe terpisah dengan VRAM khusus, pendingin kipas ganda, performa tinggi.'}
               </span>
             </div>
           {/if}
@@ -1065,6 +1101,60 @@
   }
 
   .ssd-type-note {
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-top: 6px;
+    display: block;
+    line-height: 1.4;
+  }
+
+  /* GPU VARIANT TOGGLE */
+  .gpu-model-select {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .gpu-type-tabs {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .gpu-type-btn {
+    flex: 1;
+    min-height: 45px;
+    min-width: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-sizing: border-box;
+  }
+
+  .gpu-type-btn:hover:not(.active) {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #94a3b8;
+  }
+
+  .gpu-type-btn.active {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #ffffff;
+    border-color: #0284c7;
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+  }
+
+  .gpu-type-note {
     font-size: 0.72rem;
     color: #64748b;
     margin-top: 6px;

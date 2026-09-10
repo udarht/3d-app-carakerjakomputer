@@ -605,41 +605,41 @@
                   draggable="true"
                   ondragstart={(e) => handleDragStart(e, item.id, cat.id)}
                   ondragend={handleDragEnd}
-                  class="touch-target min-h-[45px] w-full rounded-xl p-3 border shadow-sm transition-all select-none cursor-grab active:cursor-grabbing relative box-border"
+                  class="w-full rounded-xl p-3 border shadow-xs transition-all select-none cursor-grab active:cursor-grabbing relative box-border"
                   style={!isChecked
                     ? 'background-color: #ffffff; border-color: #cbd5e1;'
                     : isCorrect
-                    ? 'background-color: #ecfdf5; border-color: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);'
-                    : 'background-color: #fef2f2; border-color: #ef4444; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);'}
+                    ? 'background-color: #f0fdf4; border-color: #86efac; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.12);'
+                    : 'background-color: #fff1f2; border-color: #fca5a5; box-shadow: 0 2px 8px rgba(244, 63, 94, 0.12);'}
                   class:opacity-40={draggedItemId === item.id}
                 >
-                  <!-- Baris Atas Item -->
+                  <!-- Baris Atas Item: Icon, Nama, Badge Status, Tombol Hapus -->
                   <div class="w-full flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                      <span class="text-xl">{item.icon}</span>
-                      <span class="font-bold text-xs sm:text-sm text-slate-900">{item.name}</span>
+                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                      <span class="text-xl shrink-0">{item.icon}</span>
+                      <span class="font-bold text-xs sm:text-sm text-slate-900 truncate">{item.name}</span>
                     </div>
 
-                    <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-1.5 shrink-0">
                       <!-- Badge Benar / Salah jika sudah diperiksa -->
                       {#if isChecked}
                         {#if isCorrect}
-                          <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center gap-0.5">
+                          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1 shrink-0">
                             ✓ BENAR
                           </span>
                         {:else}
-                          <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-700 border border-rose-300 flex items-center gap-0.5">
+                          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1 shrink-0">
                             ✗ SALAH
                           </span>
                         {/if}
                       {/if}
 
-                      <!-- Tombol Kembalikan ke Bank (Touch target min 45x45 px) -->
+                      <!-- Tombol Kembalikan ke Bank -->
                       <button
                         type="button"
                         onclick={() => moveItem(item.id, 'bank')}
                         title="Keluarkan dari kotak ini"
-                        class="touch-target min-h-[45px] min-w-[45px] text-slate-500 hover:text-rose-600 p-2.5 rounded-xl hover:bg-rose-50 active:bg-rose-100 transition-colors text-sm flex items-center justify-center cursor-pointer border border-transparent hover:border-rose-200 box-border"
+                        class="text-slate-400 hover:text-rose-600 w-7 h-7 rounded-lg hover:bg-rose-100/70 active:bg-rose-200 transition-colors text-xs flex items-center justify-center cursor-pointer border border-transparent hover:border-rose-200"
                         aria-label={`Keluarkan ${item.name} dari kotak`}
                       >
                         ✕
@@ -647,49 +647,38 @@
                     </div>
                   </div>
 
-                  <!-- Feedback Penjelasan Ilmiah Terstruktur saat Diperiksa -->
+                  <!-- Ringkasan Status Saat Diperiksa (Rapi, Ringkas & Jelas) -->
                   {#if isChecked}
-                    <div
-                      class="mt-2.5 p-2.5 rounded-xl border text-xs leading-relaxed animate-feedback-slide"
-                      class:bg-emerald-50={isCorrect}
-                      class:border-emerald-200={isCorrect}
-                      class:text-emerald-950={isCorrect}
-                      class:bg-rose-50={!isCorrect}
-                      class:border-rose-200={!isCorrect}
-                      class:text-rose-950={!isCorrect}
-                    >
+                    <div class="mt-2 pt-2 border-t text-[11px] leading-relaxed animate-feedback-slide {isCorrect ? 'border-emerald-200 text-emerald-900' : 'border-rose-200 text-rose-900'}">
                       {#if isCorrect}
-                        <div class="flex items-center gap-1.5 font-bold text-emerald-800 mb-1">
-                          <span class="text-sm">✅</span>
-                          <span>Konsep Ilmiah Tepat:</span>
+                        <div class="flex items-start gap-1.5 bg-emerald-100/70 p-2 rounded-lg border border-emerald-200/80">
+                          <span class="text-emerald-700 shrink-0 mt-0.5 font-bold">✓</span>
+                          <p class="font-medium text-emerald-900 text-[11px] leading-snug">
+                            Tepat! {item.explanation}
+                          </p>
                         </div>
-                        <p class="text-[11px] text-emerald-900 font-medium">
-                          {item.explanation}
-                        </p>
                       {:else}
-                        <div class="space-y-1 mb-1.5 pb-1.5 border-b border-rose-200/80">
-                          <div class="flex items-center gap-1 font-bold text-rose-800">
-                            <span class="text-sm">⚠️</span>
-                            <span>Evaluasi Jawaban:</span>
-                          </div>
-                          <div class="grid grid-cols-2 gap-1 text-[10px]">
-                            <div class="bg-rose-100/80 px-2 py-1 rounded text-rose-900 font-semibold">
-                              Jawaban Anda: <span class="underline font-bold">{cat.title}</span>
+                        <div class="space-y-1.5">
+                          <div class="bg-white/90 p-2 rounded-lg border border-rose-200 space-y-1">
+                            <div class="text-rose-700 text-[10px] font-medium flex items-center gap-1">
+                              <span>⚠️</span>
+                              <span>Kategori Anda: <strong class="text-rose-900 font-bold">{cat.title}</strong></span>
                             </div>
-                            <div class="bg-emerald-100/90 px-2 py-1 rounded text-emerald-900 font-bold">
-                              Kategori Tepat: <span class="underline">{item.correctCategory} Device</span>
+                            <div class="text-emerald-800 text-[10px] font-semibold flex items-center gap-1">
+                              <span>🎯</span>
+                              <span>Seharusnya: <strong class="text-emerald-900 font-bold">{item.correctCategory} Device</strong></span>
                             </div>
                           </div>
-                        </div>
-                        <div class="text-[11px] text-rose-900 font-medium leading-normal">
-                          <span class="font-bold text-rose-950">Penjelasan Konsep:</span> {item.explanation}
+                          <p class="text-[10.5px] leading-snug text-rose-900 bg-rose-100/60 p-2 rounded-lg border border-rose-200/70 font-medium">
+                            {item.explanation}
+                          </p>
                         </div>
                       {/if}
                     </div>
                   {:else}
                     <!-- Petunjuk Singkat Saat Belum Diperiksa -->
                     <div class="mt-1.5 text-[10px] text-slate-500 flex items-center gap-1 truncate">
-                      <span class="text-slate-400">💡</span>
+                      <span class="text-slate-400 shrink-0">💡</span>
                       <span class="truncate">{item.hint}</span>
                     </div>
                   {/if}

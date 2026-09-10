@@ -8,8 +8,8 @@
   let isGuideOpen = $state(false);
   let isMenuOpen = $state(false);
 
-  // Simulation State
-  let currentStep = $state<1 | 2 | 3 | 4>(1);
+  // Simulation State: 5 Langkah IPOS dengan iGPU
+  let currentStep = $state<1 | 2 | 3 | 4 | 5>(1);
   let userInput = $state('Belajar Komputer Asik!');
   let processedData = $state('');
 
@@ -17,13 +17,14 @@
   let isSignalKbToCpu = $state(false);
   let isCpuProcessing = $state(false);
   let isRamProcessing = $state(false);
+  let isIgpuProcessing = $state(false);
   let isSignalCpuToMonitor = $state(false);
   let showMonitorText = $state(false);
   let isSignalRamToSsd = $state(false);
   let ssdSaved = $state(false);
   let isBusy = $state(false);
 
-  // Narration cards data
+  // Narration cards data: 5 Langkah Siklus IPOS dengan iGPU
   const stepNarrations = [
     {
       step: 1,
@@ -32,42 +33,53 @@
       color: '#0284c7',
       bgClass: 'step-input',
       icon: '⌨️',
-      summary: 'Data teks dimasukkan melalui Keyboard dan dikonversi menjadi sinyal biner.',
+      summary: 'Data teks dimasukkan melalui Keyboard dan dikonversi menjadi sinyal biner ke CPU.',
       detail:
         'Saat Anda mengetik dan menekan tombol Kirim, saklar tombol keyboard menutup rangkaian elektrik. Mikrokontroler keyboard membaca penekanan tersebut, mengubah karakter menjadi sinyal digital (kode biner 0 dan 1), lalu mengirimkannya ke bus data menuju CPU.'
     },
     {
       step: 2,
-      tag: 'TAHAP 2: PROCESS',
-      title: 'Pemrosesan Data (Process)',
+      tag: 'TAHAP 2: PROCESS (LOGIKA & RAM)',
+      title: 'Pemrosesan Data & Memori Kerja',
       color: '#9333ea',
       bgClass: 'step-process',
       icon: '⚙️',
-      summary: 'CPU mengeksekusi instruksi dan menggunakan RAM sebagai memori kerja cepat.',
+      summary: 'CPU mengolah instruksi program dan memanfaatkan RAM sebagai memori kerja bersama (shared memory).',
       detail:
-        'CPU (Central Processing Unit) mengambil instruksi dari memori (Fetch), menerjemahkannya (Decode), lalu mengeksekusi (Execute) proses pengolahan data. Selama proses ini, RAM (Random Access Memory) bertindak sebagai area kerja sementara berkecepatan tinggi untuk menampung teks yang sedang diproses.'
+        'CPU (Central Processing Unit) mengambil instruksi (Fetch), menerjemahkannya (Decode), lalu mengeksekusi (Execute) proses pengolahan data teks. Selama proses ini, RAM (Random Access Memory) bertindak sebagai area kerja bersama berkecepatan tinggi untuk menampung teks yang sedang diproses.'
     },
     {
       step: 3,
-      tag: 'TAHAP 3: OUTPUT',
-      title: 'Keluaran Hasil (Output)',
-      color: '#16a34a',
-      bgClass: 'step-output',
-      icon: '🖥️',
-      summary: 'Hasil olah data dikirim dari pemrosesan untuk ditampilkan ke Monitor.',
+      tag: 'TAHAP 3: PROCESS (GRAFIS iGPU)',
+      title: 'Pemrosesan Grafis (iGPU)',
+      color: '#0284c7',
+      bgClass: 'step-igpu',
+      icon: '🎮',
+      summary: 'Zona iGPU di dalam keping CPU menyala memproses rendering piksel visual.',
       detail:
-        'Setelah data teks selesai diproses, CPU mengirimkan instruksi grafis ke sistem display. Sinyal video digital diteruskan ke Monitor sehingga layar dapat menampilkan teks hasil pemrosesan secara visual yang dapat dibaca manusia.'
+        'Tahap Pemrosesan Grafis (iGPU): Komputer ini menggunakan iGPU (Integrated Graphics) yang tertanam langsung di dalam keping CPU untuk mengolah visual dan rendering tampilan sebelum dikirim ke monitor. Inti grafis terintegrasi ini memanfaatkan sebagian memori RAM utama (shared memory) secara efisien dan hemat daya.'
     },
     {
       step: 4,
-      tag: 'TAHAP 4: STORAGE',
+      tag: 'TAHAP 4: OUTPUT',
+      title: 'Keluaran Tampilan (Output)',
+      color: '#16a34a',
+      bgClass: 'step-output',
+      icon: '🖥️',
+      summary: 'Sinyal visual mengalir dari port/CPU menuju layar Monitor 3D hingga teks tampil di layar.',
+      detail:
+        'Setelah frame grafik selesai dirender oleh inti iGPU di CPU, sinyal video visual digital dialirkan keluar melalui jalur display bus motherboard menuju Monitor, sehingga layar menampilkan hasil pemrosesan teks secara visual yang jelas bagi pengguna.'
+    },
+    {
+      step: 5,
+      tag: 'TAHAP 5: STORAGE',
       title: 'Penyimpanan Permanen (Storage)',
       color: '#d97706',
       bgClass: 'step-storage',
       icon: '💾',
-      summary: 'Data disimpan dari RAM ke SSD agar tidak hilang saat komputer dimatikan.',
+      summary: 'Data disimpan dari RAM/CPU ke media penyimpanan permanen (SSD) secara aman.',
       detail:
-        'Karena RAM bersifat sementara (volatile) dan akan hilang jika listrik padam, data perlu disimpan ke media penyimpanan sekunder yaitu SSD (Solid State Drive). Data disalin dari RAM lalu ditulis ke dalam chip NAND Flash non-volatile secara permanen dan aman.'
+        'Karena data di RAM dan register CPU bersifat sementara (volatile) dan akan hilang jika komputer dimatikan, data dialirkan ke media penyimpanan non-volatile yaitu SSD (Solid State Drive) untuk ditulis ke sel memori flash NAND secara permanen.'
     }
   ];
 
@@ -88,13 +100,13 @@
       isSignalKbToCpu = false;
       currentStep = 2;
       isBusy = false;
-      // Auto trigger processing animation for step 2
       startStep2Process();
     }, 1800);
   }
 
-  // Action Step 2: CPU & RAM pulse
+  // Action Step 2: CPU & RAM pulse (Logika & Memori Bersama)
   function startStep2Process() {
+    if (isBusy) return;
     isBusy = true;
     isCpuProcessing = true;
     isRamProcessing = true;
@@ -104,26 +116,40 @@
       isRamProcessing = false;
       currentStep = 3;
       isBusy = false;
-      // Trigger output to monitor
-      startStep3Output();
-    }, 2400);
+      startStep3Igpu();
+    }, 2200);
   }
 
-  // Action Step 3: Signal to Monitor
-  function startStep3Output() {
+  // Action Step 3: iGPU Rendering (Zona iGPU di CPU Menyala)
+  function startStep3Igpu() {
+    if (isBusy) return;
+    isBusy = true;
+    isIgpuProcessing = true;
+
+    setTimeout(() => {
+      isIgpuProcessing = false;
+      currentStep = 4;
+      isBusy = false;
+      startStep4Output();
+    }, 2200);
+  }
+
+  // Action Step 4: Signal from CPU/iGPU to Monitor
+  function startStep4Output() {
+    if (isBusy) return;
     isBusy = true;
     isSignalCpuToMonitor = true;
 
     setTimeout(() => {
       isSignalCpuToMonitor = false;
       showMonitorText = true;
-      currentStep = 4;
+      currentStep = 5;
       isBusy = false;
     }, 1800);
   }
 
-  // Action Step 4: Save to SSD
-  function handleStep4Save() {
+  // Action Step 5: Save from RAM/CPU to SSD
+  function handleStep5Save() {
     if (isBusy) return;
     isBusy = true;
     isSignalRamToSsd = true;
@@ -142,6 +168,7 @@
     isSignalKbToCpu = false;
     isCpuProcessing = false;
     isRamProcessing = false;
+    isIgpuProcessing = false;
     isSignalCpuToMonitor = false;
     showMonitorText = false;
     isSignalRamToSsd = false;
@@ -166,6 +193,7 @@
         inputText={processedData || userInput}
         {isCpuProcessing}
         {isRamProcessing}
+        {isIgpuProcessing}
         {isSignalKbToCpu}
         {isSignalCpuToMonitor}
         {isSignalRamToSsd}
@@ -250,9 +278,10 @@
     </div>
   </header>
 
-  <!-- STEP PROGRESS TRACKER BAR -->
+  <!-- STEP PROGRESS TRACKER BAR (5 Langkah IPOS dengan iGPU) -->
   <div class="progress-dock">
     <div class="step-tracker">
+      <!-- 1. Input -->
       <button
         type="button"
         class="touch-target tracker-node"
@@ -269,6 +298,7 @@
 
       <div class="tracker-connector" class:done={currentStep > 1}></div>
 
+      <!-- 2. Process (CPU & RAM) -->
       <button
         type="button"
         class="touch-target tracker-node"
@@ -285,6 +315,7 @@
 
       <div class="tracker-connector" class:done={currentStep > 2}></div>
 
+      <!-- 3. Process (iGPU) -->
       <button
         type="button"
         class="touch-target tracker-node"
@@ -292,23 +323,41 @@
         class:done={currentStep > 3}
         onclick={() => (currentStep = 3)}
       >
-        <div class="node-badge badge-output">3</div>
+        <div class="node-badge badge-igpu">3</div>
+        <div class="node-label">
+          <span class="node-title">Process</span>
+          <span class="node-device">iGPU (Grafis)</span>
+        </div>
+      </button>
+
+      <div class="tracker-connector" class:done={currentStep > 3}></div>
+
+      <!-- 4. Output (Monitor) -->
+      <button
+        type="button"
+        class="touch-target tracker-node"
+        class:active={currentStep === 4}
+        class:done={currentStep > 4}
+        onclick={() => (currentStep = 4)}
+      >
+        <div class="node-badge badge-output">4</div>
         <div class="node-label">
           <span class="node-title">Output</span>
           <span class="node-device">Monitor</span>
         </div>
       </button>
 
-      <div class="tracker-connector" class:done={currentStep > 3}></div>
+      <div class="tracker-connector" class:done={currentStep > 4}></div>
 
+      <!-- 5. Storage (SSD) -->
       <button
         type="button"
         class="touch-target tracker-node"
-        class:active={currentStep === 4}
+        class:active={currentStep === 5}
         class:done={ssdSaved}
-        onclick={() => (currentStep = 4)}
+        onclick={() => (currentStep = 5)}
       >
-        <div class="node-badge badge-storage">4</div>
+        <div class="node-badge badge-storage">5</div>
         <div class="node-label">
           <span class="node-title">Storage</span>
           <span class="node-device">SSD</span>
@@ -367,12 +416,12 @@
           <span class="tip-text">💡 Mengetik di keyboard menghasilkan sinyal listrik biner menuju CPU.</span>
         </div>
 
-      <!-- Step 2 Controller -->
+      <!-- Step 2 Controller: Logika & RAM -->
       {:else if currentStep === 2}
         <div class="control-step-box">
           <div class="step-instruction">
             <span class="step-num">Langkah 2:</span>
-            <span>CPU dan RAM sedang memproses data masukan:</span>
+            <span>CPU dan RAM memproses instruksi logika dan data masukan:</span>
           </div>
 
           <div class="processing-status-box">
@@ -382,7 +431,7 @@
             </div>
             <div class="proc-indicator">
               <span class="pulse-dot ram-dot"></span>
-              <span>RAM: Menyimpan data sementara di alamat memori</span>
+              <span>RAM: Menyimpan data teks di memori kerja bersama (shared memory)</span>
             </div>
           </div>
 
@@ -404,7 +453,53 @@
               class="touch-target action-btn btn-next"
               onclick={() => {
                 currentStep = 3;
-                startStep3Output();
+                startStep3Igpu();
+              }}
+              disabled={isBusy}
+            >
+              Lanjut ke iGPU ➔
+            </button>
+          </div>
+        </div>
+
+      <!-- Step 3 Controller: Grafis iGPU -->
+      {:else if currentStep === 3}
+        <div class="control-step-box">
+          <div class="step-instruction">
+            <span class="step-num">Langkah 3:</span>
+            <span>Inti grafis terintegrasi (iGPU) di CPU merender tampilan:</span>
+          </div>
+
+          <div class="processing-status-box igpu-status-box">
+            <div class="proc-indicator">
+              <span class="pulse-dot igpu-dot"></span>
+              <span>iGPU (Integrated Core): Merender frame grafis & kalkulasi piksel</span>
+            </div>
+            <div class="proc-indicator">
+              <span class="pulse-dot ram-dot"></span>
+              <span>Shared VRAM: Membaca buffer grafis dari memori sistem RAM</span>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button
+              type="button"
+              class="touch-target action-btn btn-igpu"
+              onclick={startStep3Igpu}
+              disabled={isBusy}
+            >
+              {#if isIgpuProcessing}
+                <span class="btn-spinner"></span> Merender Visual iGPU...
+              {:else}
+                🎮 Putar Ulang Rendering iGPU
+              {/if}
+            </button>
+            <button
+              type="button"
+              class="touch-target action-btn btn-next"
+              onclick={() => {
+                currentStep = 4;
+                startStep4Output();
               }}
               disabled={isBusy}
             >
@@ -413,12 +508,12 @@
           </div>
         </div>
 
-      <!-- Step 3 Controller -->
-      {:else if currentStep === 3}
+      <!-- Step 4 Controller: Output ke Monitor -->
+      {:else if currentStep === 4}
         <div class="control-step-box">
           <div class="step-instruction">
-            <span class="step-num">Langkah 3:</span>
-            <span>Hasil pemrosesan dikirim ke Monitor:</span>
+            <span class="step-num">Langkah 4:</span>
+            <span>Hasil visual dialirkan dari port/CPU ke Monitor 3D:</span>
           </div>
 
           <div class="output-preview-card">
@@ -433,7 +528,7 @@
             <button
               type="button"
               class="touch-target action-btn btn-output"
-              onclick={startStep3Output}
+              onclick={startStep4Output}
               disabled={isBusy}
             >
               {#if isSignalCpuToMonitor}
@@ -445,7 +540,7 @@
             <button
               type="button"
               class="touch-target action-btn btn-next"
-              onclick={() => (currentStep = 4)}
+              onclick={() => (currentStep = 5)}
               disabled={isBusy}
             >
               Lanjut ke Storage ➔
@@ -453,12 +548,12 @@
           </div>
         </div>
 
-      <!-- Step 4 Controller -->
-      {:else if currentStep === 4}
+      <!-- Step 5 Controller: Storage SSD -->
+      {:else if currentStep === 5}
         <div class="control-step-box">
           <div class="step-instruction">
-            <span class="step-num">Langkah 4:</span>
-            <span>Simpan data dari RAM ke media penyimpanan permanen (SSD):</span>
+            <span class="step-num">Langkah 5:</span>
+            <span>Simpan data dari RAM/CPU ke media penyimpanan permanen (SSD):</span>
           </div>
 
           <div class="storage-action-box">
@@ -479,7 +574,7 @@
             <button
               type="button"
               class="touch-target action-btn btn-storage"
-              onclick={handleStep4Save}
+              onclick={handleStep5Save}
               disabled={isBusy || ssdSaved}
             >
               {#if isSignalRamToSsd}
@@ -518,15 +613,17 @@
           <p class="box-text">{currentNarration.detail}</p>
         </div>
 
-        <!-- Flow Visual Pill Indicator -->
+        <!-- Flow Visual Pill Indicator: 5 Langkah IPOS iGPU -->
         <div class="ipos-mini-flow">
-          <span class="mini-node" class:highlight={currentStep === 1}>Input</span>
+          <span class="mini-node" class:highlight={currentStep === 1}>1. Input</span>
           <span class="mini-arrow">➔</span>
-          <span class="mini-node" class:highlight={currentStep === 2}>Process</span>
+          <span class="mini-node" class:highlight={currentStep === 2}>2. CPU/RAM</span>
           <span class="mini-arrow">➔</span>
-          <span class="mini-node" class:highlight={currentStep === 3}>Output</span>
+          <span class="mini-node" class:highlight={currentStep === 3}>3. iGPU</span>
           <span class="mini-arrow">➔</span>
-          <span class="mini-node" class:highlight={currentStep === 4}>Storage</span>
+          <span class="mini-node" class:highlight={currentStep === 4}>4. Output</span>
+          <span class="mini-arrow">➔</span>
+          <span class="mini-node" class:highlight={currentStep === 5}>5. Storage</span>
         </div>
       </div>
     </div>
@@ -883,6 +980,11 @@
     color: #ffffff;
     box-shadow: 0 0 12px rgba(147, 51, 234, 0.6);
   }
+  .tracker-node.active .node-badge.badge-igpu {
+    background: #0284c7;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(2, 132, 199, 0.6);
+  }
   .tracker-node.active .node-badge.badge-output {
     background: #16a34a;
     color: #ffffff;
@@ -1050,6 +1152,10 @@
     background: linear-gradient(135deg, #9333ea, #7c3aed);
   }
 
+  .btn-igpu {
+    background: linear-gradient(135deg, #0284c7, #0891b2);
+  }
+
   .btn-output {
     background: linear-gradient(135deg, #16a34a, #059669);
   }
@@ -1113,6 +1219,7 @@
 
   .cpu-dot { background-color: #9333ea; }
   .ram-dot { background-color: #06b6d4; }
+  .igpu-dot { background-color: #00f0ff; }
 
   @keyframes pulseGlow {
     0%, 100% { opacity: 0.4; transform: scale(0.9); }
@@ -1221,6 +1328,7 @@
 
   .step-input { background: #e0f2fe; color: #0369a1; }
   .step-process { background: #f3e8ff; color: #7e22ce; }
+  .step-igpu { background: #e0f2fe; color: #0284c7; }
   .step-output { background: #dcfce7; color: #15803d; }
   .step-storage { background: #fef3c7; color: #a16207; }
 

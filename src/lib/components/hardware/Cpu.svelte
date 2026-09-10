@@ -7,11 +7,15 @@
   let {
     position = [0, 0.6, 0] as [number, number, number],
     rotation = [0.4, 0, 0] as [number, number, number],
-    autoRotate = true
+    autoRotate = true,
+    showIgpuCore = false,
+    isIgpuActive = false
   }: {
     position?: [number, number, number];
     rotation?: [number, number, number];
     autoRotate?: boolean;
+    showIgpuCore?: boolean;
+    isIgpuActive?: boolean;
   } = $props();
 
   let rotY = $state(0);
@@ -92,14 +96,50 @@
   </T.Mesh>
 
   <!-- Laser Etched CPU Branding Typography Accent -->
-  <T.Mesh position={[0, 0.18, 0.2]}>
-    <T.BoxGeometry args={[1.2, 0.005, 0.25]} />
+  <T.Mesh position={[0, 0.18, 0.35]}>
+    <T.BoxGeometry args={[1.2, 0.005, 0.2]} />
     <T.MeshStandardMaterial
       color="#475569"
       roughness={0.4}
       metalness={0.2}
     />
   </T.Mesh>
+
+  <!-- iGPU (Integrated GPU) Silicon Die Zone on Chip Surface -->
+  {#if showIgpuCore || isIgpuActive}
+    <T.Group position={[0, 0.178, -0.25]}>
+      <!-- iGPU Core Substrate Area -->
+      <T.Mesh position={[0, 0, 0]}>
+        <T.BoxGeometry args={[1.2, 0.015, 0.7]} />
+        <T.MeshStandardMaterial
+          color={isIgpuActive ? '#0284c7' : '#334155'}
+          emissive={isIgpuActive ? '#38bdf8' : '#0369a1'}
+          emissiveIntensity={isIgpuActive ? 1.4 : 0.35}
+          roughness={0.2}
+          metalness={0.7}
+        />
+      </T.Mesh>
+
+      <!-- iGPU Core Compute Units (Silikon Bergaris) -->
+      {#each [-0.38, 0, 0.38] as cx}
+        <T.Mesh position={[cx, 0.008, 0]}>
+          <T.BoxGeometry args={[0.26, 0.008, 0.52]} />
+          <T.MeshStandardMaterial
+            color={isIgpuActive ? '#bae6fd' : '#1e293b'}
+            emissive={isIgpuActive ? '#00f0ff' : '#0284c7'}
+            emissiveIntensity={isIgpuActive ? 1.8 : 0.2}
+            roughness={0.15}
+            metalness={0.8}
+          />
+        </T.Mesh>
+      {/each}
+
+      <!-- iGPU Glowing Light Pulse when active -->
+      {#if isIgpuActive}
+        <T.PointLight position={[0, 0.4, 0]} color="#00f0ff" intensity={3.5} distance={2.5} />
+      {/if}
+    </T.Group>
+  {/if}
 
   <!-- 4. Gold Triangle Alignment Notch on Top-Left Corner of PCB (Tanda Segitiga Emas) -->
   <T.Mesh position={[-1.22, 0.045, -1.22]} rotation.y={Math.PI / 4}>

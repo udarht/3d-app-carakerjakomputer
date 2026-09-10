@@ -28,6 +28,14 @@ export const hardwareData = [
     desc: 'Random Access Memory adalah memori kerja utama super cepat yang menyimpan data dan instruksi program yang sedang diproses oleh CPU secara sementara (volatile).'
   },
   {
+    id: 'gpu',
+    name: 'GPU (Graphics Processing Unit)',
+    category: 'Process',
+    icon: '🎮',
+    desc: 'Perangkat pemrosesan khusus untuk mengolah data visual, kalkulasi grafis 3D, dan rendering ke layar monitor.',
+    variants: ['Integrated (iGPU)', 'Dedicated (dGPU)']
+  },
+  {
     id: 'ssd',
     name: 'SSD',
     category: 'Storage',

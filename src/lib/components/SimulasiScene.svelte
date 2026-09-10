@@ -15,6 +15,7 @@
     inputText = 'Halo Komputer!',
     isCpuProcessing = false,
     isRamProcessing = false,
+    isIgpuProcessing = false,
     isSignalKbToCpu = false,
     isSignalCpuToMonitor = false,
     isSignalRamToSsd = false,
@@ -25,6 +26,7 @@
     inputText?: string;
     isCpuProcessing?: boolean;
     isRamProcessing?: boolean;
+    isIgpuProcessing?: boolean;
     isSignalKbToCpu?: boolean;
     isSignalCpuToMonitor?: boolean;
     isSignalRamToSsd?: boolean;
@@ -266,7 +268,13 @@
 <!-- ============================================== -->
 <!-- Mendatar dengan IHS menghadap ke atas, scale proporsional terhadap keyboard -->
 <T.Group position={CPU_POS} scale={0.65}>
-  <Cpu position={[0, 0.04, 0]} rotation={[0, 0, 0]} autoRotate={false} />
+  <Cpu
+    position={[0, 0.04, 0]}
+    rotation={[0, 0, 0]}
+    autoRotate={false}
+    showIgpuCore={true}
+    isIgpuActive={isIgpuProcessing}
+  />
 
   <!-- CPU Socket Latch Frame pada Motherboard -->
   <T.Mesh position={[0, 0.01, 0]}>
@@ -274,7 +282,7 @@
     <T.MeshStandardMaterial color="#334155" roughness={0.4} metalness={0.3} />
   </T.Mesh>
 
-  <!-- CPU Socket Glow Pulse when processing -->
+  <!-- CPU Socket Glow Pulse when general processing -->
   {#if isCpuProcessing}
     <T.Mesh position={[0, 0.04, 0]}>
       <T.BoxGeometry args={[3.3, 0.05, 3.3]} />
@@ -288,13 +296,26 @@
     <T.PointLight position={[0, 1.0, 0]} color="#a855f7" intensity={3.5 * glowIntensity} distance={3.0} />
   {/if}
 
+  <!-- CPU iGPU Graphics Glow Pulse when rendering -->
+  {#if isIgpuProcessing}
+    <T.Mesh position={[0, 0.04, 0]}>
+      <T.BoxGeometry args={[3.35, 0.055, 3.35]} />
+      <T.MeshBasicMaterial
+        color="#00f0ff"
+        transparent
+        opacity={0.45 * glowIntensity}
+      />
+    </T.Mesh>
+    <T.PointLight position={[0, 1.2, 0]} color="#00f0ff" intensity={4.5 * glowIntensity} distance={3.5} />
+  {/if}
+
   <!-- Pedestal Aura / Label ring -->
   <T.Mesh position={[0, 0.01, 0]} rotation.x={Math.PI / 2}>
     <T.RingGeometry args={[1.8, 1.88, 48]} />
     <T.MeshBasicMaterial
-      color="#a855f7"
+      color={isIgpuProcessing || activeStep === 3 ? '#00f0ff' : '#a855f7'}
       transparent
-      opacity={activeStep === 2 || isCpuProcessing ? 0.9 : 0.25}
+      opacity={activeStep === 2 || activeStep === 3 || isCpuProcessing || isIgpuProcessing ? 0.9 : 0.25}
     />
   </T.Mesh>
 </T.Group>
@@ -391,7 +412,7 @@
     <T.MeshBasicMaterial
       color="#16a34a"
       transparent
-      opacity={activeStep === 3 || isSignalCpuToMonitor ? 0.9 : 0.25}
+      opacity={activeStep === 4 || isSignalCpuToMonitor ? 0.9 : 0.25}
     />
   </T.Mesh>
 </T.Group>
@@ -422,7 +443,7 @@
     <T.MeshBasicMaterial
       color="#eab308"
       transparent
-      opacity={activeStep === 4 || isSignalRamToSsd || ssdSaved ? 0.9 : 0.25}
+      opacity={activeStep === 5 || isSignalRamToSsd || ssdSaved ? 0.9 : 0.25}
     />
   </T.Mesh>
 </T.Group>

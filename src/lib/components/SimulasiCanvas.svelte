@@ -7,6 +7,7 @@
     inputText = 'Halo Komputer!',
     isCpuProcessing = false,
     isRamProcessing = false,
+    isIgpuProcessing = false,
     isSignalKbToCpu = false,
     isSignalCpuToMonitor = false,
     isSignalRamToSsd = false,
@@ -17,6 +18,7 @@
     inputText?: string;
     isCpuProcessing?: boolean;
     isRamProcessing?: boolean;
+    isIgpuProcessing?: boolean;
     isSignalKbToCpu?: boolean;
     isSignalCpuToMonitor?: boolean;
     isSignalRamToSsd?: boolean;
@@ -32,6 +34,7 @@
       {inputText}
       {isCpuProcessing}
       {isRamProcessing}
+      {isIgpuProcessing}
       {isSignalKbToCpu}
       {isSignalCpuToMonitor}
       {isSignalRamToSsd}

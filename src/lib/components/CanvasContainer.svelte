@@ -5,17 +5,21 @@
   let {
     selectedId = 'monitor',
     ssdVariant = 'm2',
-    onVariantChange
+    gpuVariant = 'dedicated',
+    onVariantChange,
+    onGpuVariantChange
   }: {
     selectedId: string;
     ssdVariant?: 'm2' | 'sata';
+    gpuVariant?: 'integrated' | 'dedicated';
     onVariantChange?: (v: 'm2' | 'sata') => void;
+    onGpuVariantChange?: (v: 'integrated' | 'dedicated') => void;
   } = $props();
 </script>
 
 <div class="canvas-wrapper">
   <Canvas>
-    <Scene {selectedId} {ssdVariant} {onVariantChange} />
+    <Scene {selectedId} {ssdVariant} {gpuVariant} {onVariantChange} {onGpuVariantChange} />
   </Canvas>
 </div>
 

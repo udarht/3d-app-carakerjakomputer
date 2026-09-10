@@ -32,6 +32,14 @@ export const quizItems = [
     explanation: 'RAM termasuk dalam Process Device (Working Memory) tempat CPU menaruh data saat diproses.'
   },
   {
+    id: 'gpu',
+    name: 'GPU (Graphics Processing Unit)',
+    correctCategory: 'Process',
+    hint: 'Mengolah data visual grafis 3D dan rendering gambar sebelum diteruskan ke monitor.',
+    icon: '🎮',
+    explanation: 'GPU adalah Process Device khusus komputasi grafis dan rendering visual berkemampuan paralel tinggi.'
+  },
+  {
     id: 'ssd',
     name: 'SSD',
     correctCategory: 'Storage',
