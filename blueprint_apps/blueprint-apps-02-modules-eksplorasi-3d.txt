@@ -5,7 +5,7 @@ CUSTOM CODEBASE MAP: EKSPLORASI 3D HARDWARE
 [Komponen: Halaman Eksplorasi 3D Utama]
 - File Path          : src/routes/+page.svelte
 - Tipe/Entitas       : UI Component (Page Controller / State Coordinator)
-- Tanggung Jawab     : Mengelola status reaktif aktif aplikasi (hardware terpilih, filter kategori, status expand panel drawer informasi, varian model SSD), mengoordinasikan interaksi UI 2D dengan container 3D, dan menyajikan metadata edukatif komponen.
+- Tanggung Jawab     : Mengelola status reaktif aktif aplikasi (hardware terpilih, filter kategori, status expand panel drawer informasi, varian model SSD `m2`/`sata`, varian model GPU `integrated`/`dedicated`), mengoordinasikan interaksi UI 2D dengan container 3D, dan menyajikan metadata edukatif komponen.
 - Ketergantungan     : src/lib/components/CanvasContainer.svelte, src/lib/data/hardware.js (hardwareData)
 - Menggunakan Paket  : svelte (^5.56.1)
 - Entry Point        : Route URL: `/`
@@ -13,7 +13,7 @@ CUSTOM CODEBASE MAP: EKSPLORASI 3D HARDWARE
 [Komponen: Canvas Container 3D]
 - File Path          : src/lib/components/CanvasContainer.svelte
 - Tipe/Entitas       : UI Component (3D Canvas Wrapper)
-- Tanggung Jawab     : Membungkus canvas WebGL Threlte, mengatur styling latar belakang studio gradasi radial responsif, serta meneruskan state hardware aktif dan varian SSD ke dalam scene 3D.
+- Tanggung Jawab     : Membungkus canvas WebGL Threlte, mengatur styling latar belakang studio gradasi radial responsif, serta meneruskan state hardware aktif, varian SSD, dan varian GPU ke dalam scene 3D.
 - Ketergantungan     : src/lib/components/Scene.svelte
 - Menggunakan Paket  : @threlte/core (^8.6.0)
 - Entry Point        : Dipanggil secara deklaratif oleh `src/routes/+page.svelte`
@@ -22,7 +22,7 @@ CUSTOM CODEBASE MAP: EKSPLORASI 3D HARDWARE
 - File Path          : src/lib/components/Scene.svelte
 - Tipe/Entitas       : UI Component (3D Scene Orchestrator)
 - Tanggung Jawab     : Mengatur kamera (PerspectiveCamera), kontrol rotasi/zoom interaktif (OrbitControls), pencahayaan multi-titik (Ambient, Hemisphere, Directional key/fill/front lights), lantai studio dan cincin aksen pedestal, serta melakukan conditional rendering model 3D hardware berdasarkan `selectedId`.
-- Ketergantungan     : src/lib/components/hardware/Monitor.svelte, src/lib/components/hardware/Keyboard.svelte, src/lib/components/hardware/Mouse.svelte, src/lib/components/hardware/Cpu.svelte, src/lib/components/hardware/Ram.svelte, src/lib/components/hardware/Ssd.svelte, src/lib/components/hardware/Harddisk.svelte, src/lib/components/hardware/Speaker.svelte, src/lib/components/hardware/Printer.svelte
+- Ketergantungan     : src/lib/components/hardware/Monitor.svelte, src/lib/components/hardware/Keyboard.svelte, src/lib/components/hardware/Mouse.svelte, src/lib/components/hardware/Cpu.svelte, src/lib/components/hardware/Ram.svelte, src/lib/components/hardware/Gpu.svelte, src/lib/components/hardware/Ssd.svelte, src/lib/components/hardware/Harddisk.svelte, src/lib/components/hardware/Speaker.svelte, src/lib/components/hardware/Printer.svelte
 - Menggunakan Paket  : @threlte/core (^8.6.0), @threlte/extras (^9.21.1)
 - Entry Point        : Dipanggil secara deklaratif oleh `src/lib/components/CanvasContainer.svelte`
 
@@ -53,10 +53,10 @@ CUSTOM CODEBASE MAP: EKSPLORASI 3D HARDWARE
 [Komponen: Model 3D CPU (Processor)]
 - File Path          : src/lib/components/hardware/Cpu.svelte
 - Tipe/Entitas       : UI Component (Procedural 3D Mesh & Animation)
-- Tanggung Jawab     : Me-render Integrated Heat Spreader (IHS) logam CPU, substrate PCB hijau, deretan pin emas LGA/PGA bawah, animasi rotasi terus-menerus Y-axis via `useTask`, serta fitur klik untuk toggle inspeksi pin/detail melalui overlay 3D HTML annotations.
+- Tanggung Jawab     : Me-render Integrated Heat Spreader (IHS) logam CPU, substrate PCB hijau, deretan pin emas LGA/PGA bawah, zona komputasi grafis terintegrasi (iGPU silicon die core surface dengan unit komputasi bertingkat dan efek visual glow/pulsa cahaya dinamis), animasi rotasi terus-menerus Y-axis via `useTask`, serta fitur klik untuk toggle inspeksi pin/detail melalui overlay 3D HTML annotations.
 - Ketergantungan     : Tidak Ada
 - Menggunakan Paket  : @threlte/core (^8.6.0), @threlte/extras (^9.21.1)
-- Entry Point        : Dipanggil secara deklaratif oleh `src/lib/components/Scene.svelte` saat `selectedId === 'cpu'`
+- Entry Point        : Dipanggil secara deklaratif oleh `src/lib/components/Scene.svelte` saat `selectedId === 'cpu'` (dan di `SimulasiScene.svelte` untuk simulasi siklus IPOS dengan highlight iGPU)
 
 [Komponen: Model 3D RAM]
 - File Path          : src/lib/components/hardware/Ram.svelte
@@ -65,6 +65,14 @@ CUSTOM CODEBASE MAP: EKSPLORASI 3D HARDWARE
 - Ketergantungan     : Tidak Ada
 - Menggunakan Paket  : @threlte/core (^8.6.0), @threlte/extras (^9.21.1)
 - Entry Point        : Dipanggil secara deklaratif oleh `src/lib/components/Scene.svelte` saat `selectedId === 'ram'`
+
+[Komponen: Model 3D GPU (Graphics Processing Unit)]
+- File Path          : src/lib/components/hardware/Gpu.svelte
+- Tipe/Entitas       : UI Component (Procedural 3D Mesh & Dual-Variant Switcher)
+- Tanggung Jawab     : Menyediakan representasi 3D untuk dua varian GPU arsitektur komputer: Integrated GPU/iGPU (PCB hijau substrate, central shiny silicon die, contact pads bawah, komponen SMD mikro) dan Dedicated GPU/dGPU (kartu ekspansi PCIe x16 horizontal, rear metal I/O bracket port display, heatsink fin array alumunium, pipa tembaga, dual cooling fans berputar via `useTask`, cyber neon accent stripe, dan konektor daya PCIe). Dilengkapi floating HTML pill button switcher varian dan modal detail komponen.
+- Ketergantungan     : Tidak Ada
+- Menggunakan Paket  : @threlte/core (^8.6.0), @threlte/extras (^9.21.1)
+- Entry Point        : Dipanggil secara deklaratif oleh `src/lib/components/Scene.svelte` saat `selectedId === 'gpu'`
 
 [Komponen: Model 3D SSD]
 - File Path          : src/lib/components/hardware/Ssd.svelte

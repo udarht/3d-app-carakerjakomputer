@@ -13,7 +13,7 @@ CUSTOM CODEBASE MAP: KUIS GAME KLASIFIKASI HARDWARE
 [Komponen: Dataset Pertanyaan & Definisi Kategori Kuis]
 - File Path          : src/lib/data/quiz.js
 - Tipe/Entitas       : Service / Data Provider (In-Memory Dataset)
-- Tanggung Jawab     : Menyediakan data statis daftar pertanyaan kuis (9 item perangkat keras lengkap dengan ID, nama, kunci jawaban kategori yang benar, petunjuk hint, ikon emoji, serta teks penjelasan komprehensif) dan definisi metadata kategori (Input, Process, Storage, Output beserta judul, subjudul, deskripsi, dan kode warna tema).
+- Tanggung Jawab     : Menyediakan data statis daftar pertanyaan kuis (10 item perangkat keras lengkap dengan ID, nama, kunci jawaban kategori yang benar [termasuk GPU ke kategori Process], petunjuk hint, ikon emoji, serta teks penjelasan komprehensif) dan definisi metadata kategori (Input, Process, Storage, Output beserta judul, subjudul, deskripsi, dan kode warna tema).
 - Ketergantungan     : Tidak Ada
 - Menggunakan Paket  : Tidak Ada
 - Entry Point        : Diimpor dan dikonsumsi langsung oleh `src/routes/kuis/+page.svelte`
