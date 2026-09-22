@@ -1,8 +1,42 @@
 <script lang="ts">
   import { T } from '@threlte/core';
-  import { interactivity, Text } from '@threlte/extras';
+  import { interactivity } from '@threlte/extras';
+  import * as THREE from 'three';
 
   interactivity();
+
+  // Create crisp CanvasTexture for keycap label completely offline using local system fonts
+  function createKeyLabelTexture(label: string, isPressed: boolean, isHovered: boolean): THREE.CanvasTexture {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d')!;
+
+    // Transparent canvas
+    ctx.clearRect(0, 0, 256, 256);
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = isPressed ? '#93c5fd' : isHovered ? '#38bdf8' : '#f8fafc';
+
+    // Choose font size based on text length / symbol
+    let fontSize = 92;
+    if (label.length > 5) {
+      fontSize = 46;
+    } else if (label.length > 2) {
+      fontSize = 58;
+    }
+
+    ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`;
+    ctx.fillText(label, 128, 128);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.generateMipmaps = true;
+    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.needsUpdate = true;
+    return texture;
+  }
 
   let {
     position = [0, 0, 0] as [number, number, number],
@@ -369,17 +403,16 @@
           </T.Mesh>
         {/if}
 
-        <!-- Key Label Text: @threlte/extras <Text> slightly above key surface (y + 0.021) to prevent z-fighting -->
-        <Text
-          text={key.label}
-          fontSize={key.fontSize}
-          color={isPressed ? '#93c5fd' : isHovered ? '#38bdf8' : '#f8fafc'}
-          position={[0, KEY_HEIGHT / 2 + 0.002, 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          anchorX="center"
-          anchorY="middle"
-          fillOpacity={0.95}
-        />
+        <!-- Key Label Mesh using CanvasTexture (100% offline-ready, no Google Fonts request) -->
+        <T.Mesh position={[0, KEY_HEIGHT / 2 + 0.001, 0]} rotation.x={-Math.PI / 2}>
+          <T.PlaneGeometry args={[key.w * 0.9, key.d * 0.85]} />
+          <T.MeshBasicMaterial
+            map={createKeyLabelTexture(key.label, isPressed, isHovered)}
+            transparent
+            opacity={0.95}
+            depthWrite={false}
+          />
+        </T.Mesh>
       </T.Group>
     {/each}
   {/each}

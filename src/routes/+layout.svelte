@@ -1,5 +1,6 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
+	import '../app.css';
 
 	let { children } = $props();
 </script>
@@ -58,7 +59,7 @@
 		height: 100%;
 		overflow: hidden;
 		background-color: #ffffff; /* Latar belakang putih bersih seperti web pada umumnya */
-		font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Plus Jakarta Sans', sans-serif;
 		color: #0f172a;
 		-webkit-tap-highlight-color: transparent;
 	}
