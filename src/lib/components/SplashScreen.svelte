@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from '$app/paths';
   let { onStart }: { onStart: () => void } = $props();
 
   let isClosing = $state(false);
@@ -31,10 +32,10 @@
       <div class="relative z-10 flex flex-wrap items-center justify-between gap-4">
         <!-- Education Brand Strip -->
         <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/15 px-3 py-1.5 rounded-full shadow-inner">
-          <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-7 w-auto object-contain" title="Tut Wuri Handayani" />
-          <img src="/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-7 w-auto object-contain" />
-          <img src="/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-7 w-auto object-contain" />
-          <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-7 w-auto max-w-[56px] object-contain" title="Sobat SMP 2025" />
+          <img src="{base}/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-7 w-auto object-contain" title="Tut Wuri Handayani" />
+          <img src="{base}/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-7 w-auto object-contain" />
+          <img src="{base}/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-7 w-auto object-contain" />
+          <img src="{base}/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-7 w-auto max-w-[56px] object-contain" title="Sobat SMP 2025" />
         </div>
 
         <!-- Badges Kategori -->

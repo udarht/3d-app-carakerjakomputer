@@ -1,11 +1,12 @@
 <script lang="ts">
 	import '../app.css';
+	import { base } from '$app/paths';
 
 	let { children } = $props();
 </script>
 
 <svelte:head>
-	<link rel="icon" type="image/png" href="/images/Tutwuri_3.png" />
+	<link rel="icon" type="image/png" href="{base}/images/Tutwuri_3.png" />
 </svelte:head>
 
 <!-- Mobile Portrait Orientation Warning Overlay (Sesuai Kriteria 1) -->

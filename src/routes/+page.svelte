@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { base } from '$app/paths';
   import CanvasContainer from '$lib/components/CanvasContainer.svelte';
   import SplashScreen from '$lib/components/SplashScreen.svelte';
   import GuideModal from '$lib/components/GuideModal.svelte';
@@ -92,10 +93,10 @@
         <div class="brand">
           <!-- Logo Pendidikan Kemdikbud / Sobat SMP Strip -->
           <div class="edu-logos">
-            <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="edu-logo-img" title="Tut Wuri Handayani - Kemdikbudristek" />
-            <img src="/images/Logo_02.png" alt="Logo Pendidikan 2" class="edu-logo-img" />
-            <img src="/images/Logo_03.png" alt="Logo Pendidikan 3" class="edu-logo-img" />
-            <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP 2025" class="edu-logo-img logo-sobat" title="Sobat SMP 2025" />
+            <img src="{base}/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="edu-logo-img" title="Tut Wuri Handayani - Kemdikbudristek" />
+            <img src="{base}/images/Logo_02.png" alt="Logo Pendidikan 2" class="edu-logo-img" />
+            <img src="{base}/images/Logo_03.png" alt="Logo Pendidikan 3" class="edu-logo-img" />
+            <img src="{base}/images/LogoSobatSMP2025.png" alt="Sobat SMP 2025" class="edu-logo-img logo-sobat" title="Sobat SMP 2025" />
           </div>
           <div class="brand-divider"></div>
           <div class="brand-text">
@@ -152,15 +153,15 @@
 
       <!-- Kotak Mode Switcher -->
       <div class="mode-toggle-group">
-        <a href="/" class="touch-target mode-link active">
+        <a href="{base}/" class="touch-target mode-link active">
           <span class="mode-icon">🔍</span>
           <span>Mode Eksplorasi</span>
         </a>
-        <a href="/simulasi" class="touch-target mode-link">
+        <a href="{base}/simulasi" class="touch-target mode-link">
           <span class="mode-icon">🚀</span>
           <span>Mode Simulasi</span>
         </a>
-        <a href="/kuis" class="touch-target mode-link">
+        <a href="{base}/kuis" class="touch-target mode-link">
           <span class="mode-icon">🧩</span>
           <span>Kuis Game</span>
         </a>
@@ -359,10 +360,10 @@
           <!-- Educational Attribution Badge -->
           <div class="edu-attribution-card">
             <div class="edu-attr-logos">
-              <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="edu-attr-img" />
-              <img src="/images/Logo_02.png" alt="Logo Pendidikan" class="edu-attr-img" />
-              <img src="/images/Logo_03.png" alt="Logo Pendidikan" class="edu-attr-img" />
-              <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="edu-attr-img logo-sobat" />
+              <img src="{base}/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="edu-attr-img" />
+              <img src="{base}/images/Logo_02.png" alt="Logo Pendidikan" class="edu-attr-img" />
+              <img src="{base}/images/Logo_03.png" alt="Logo Pendidikan" class="edu-attr-img" />
+              <img src="{base}/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="edu-attr-img logo-sobat" />
             </div>
             <span class="edu-attr-text">Media Pembelajaran Informatika Interaktif</span>
           </div>

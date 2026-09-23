@@ -21,7 +21,7 @@
   } = $props();
 
   let rotY = $state(-0.4);
-  let isRotating = $state(autoRotate);
+  let isPaused = $state(false);
   let showDetails = $state(false);
   let localActiveTab = $state<'m2' | 'sata'>('m2');
   let activeTab = $derived(ssdVariant ?? localActiveTab);
@@ -33,7 +33,7 @@
   }
 
   useTask((delta) => {
-    if (isRotating) {
+    if (autoRotate && !isPaused) {
       rotY += delta * 0.4;
     }
   });
@@ -41,7 +41,7 @@
   function toggleClick(e: any) {
     e.stopPropagation();
     showDetails = !showDetails;
-    isRotating = !showDetails;
+    isPaused = showDetails;
   }
 </script>
 
@@ -187,7 +187,6 @@
     <div
       class="ssd-overlay"
       onpointerdown={(e) => e.stopPropagation()}
-      onclick={(e) => e.stopPropagation()}
     >
       <div class="tab-switch">
         <button

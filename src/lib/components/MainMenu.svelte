@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from '$app/paths';
   let {
     isOpen = false,
     onClose,
@@ -85,10 +86,10 @@
         <div class="relative z-10 flex flex-wrap items-center justify-between gap-4">
           <!-- Identity Strip -->
           <div class="flex items-center gap-2.5 bg-white/10 backdrop-blur-md border border-white/15 px-3 py-1.5 rounded-full">
-            <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-7 w-auto object-contain" />
-            <img src="/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-7 w-auto object-contain" />
-            <img src="/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-7 w-auto object-contain" />
-            <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-7 w-auto max-w-[56px] object-contain" />
+            <img src="{base}/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-7 w-auto object-contain" />
+            <img src="{base}/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-7 w-auto object-contain" />
+            <img src="{base}/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-7 w-auto object-contain" />
+            <img src="{base}/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-7 w-auto max-w-[56px] object-contain" />
             <span class="text-xs font-semibold text-sky-200 border-l border-white/20 pl-2 ml-0.5">Fase D SMP</span>
           </div>
 
@@ -161,7 +162,7 @@
 
               <!-- Large Touch Action Button (>= 48px height) -->
               <a
-                href={mod.href}
+                href="{base}{mod.href === '/' ? '' : mod.href}"
                 onclick={() => handleCardClick(mod.href)}
                 class="touch-target min-h-[48px] w-full px-5 py-3 rounded-2xl bg-gradient-to-r {mod.buttonGrad} text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all no-underline cursor-pointer group-hover:scale-[1.02] active:scale-[0.98]"
                 aria-label="Mulai {mod.title}"

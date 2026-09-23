@@ -21,7 +21,7 @@
   } = $props();
 
   let rotY = $state(-0.3);
-  let isRotating = $state(autoRotate);
+  let isPaused = $state(false);
   let showDetails = $state(false);
   let localActiveVariant = $state<'integrated' | 'dedicated'>('dedicated');
   let activeVariant = $derived(gpuVariant ?? localActiveVariant);
@@ -34,7 +34,7 @@
   }
 
   useTask((delta) => {
-    if (isRotating) {
+    if (autoRotate && !isPaused) {
       rotY += delta * 0.4;
     }
     fanRot += delta * 8.0;
@@ -43,7 +43,7 @@
   function toggleClick(e: any) {
     e.stopPropagation();
     showDetails = !showDetails;
-    isRotating = !showDetails;
+    isPaused = showDetails;
   }
 </script>
 
@@ -322,7 +322,6 @@
     <div
       class="gpu-overlay"
       onpointerdown={(e) => e.stopPropagation()}
-      onclick={(e) => e.stopPropagation()}
     >
       <div class="tab-switch">
         <button

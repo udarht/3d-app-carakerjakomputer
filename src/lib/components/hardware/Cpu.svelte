@@ -19,13 +19,13 @@
   } = $props();
 
   let rotY = $state(0);
-  let isRotating = $state(autoRotate);
+  let isPaused = $state(false);
   let hovered = $state(false);
   let showDetails = $state(false);
 
   // Slow smooth rotation animation around Y-axis
   useTask((delta) => {
-    if (isRotating) {
+    if (autoRotate && !isPaused) {
       rotY += delta * 0.5;
     }
   });
@@ -33,7 +33,7 @@
   function toggleClick(e: any) {
     e.stopPropagation();
     showDetails = !showDetails;
-    isRotating = !showDetails;
+    isPaused = showDetails;
   }
 </script>
 

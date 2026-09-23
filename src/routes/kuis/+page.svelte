@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { base } from '$app/paths';
   import GuideModal from '$lib/components/GuideModal.svelte';
   import MainMenu from '$lib/components/MainMenu.svelte';
   import { quizItems, categoryDefinitions } from '$lib/data/quiz.js';
@@ -224,10 +225,10 @@
     <div class="flex items-center gap-2.5 sm:gap-3">
       <!-- Education Logos Strip -->
       <div class="hidden sm:flex items-center gap-1.5 bg-slate-100/90 border border-slate-200/80 rounded-full px-2.5 py-1 shadow-sm">
-        <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-6 w-auto object-contain hover:scale-110 transition-transform" title="Tut Wuri Handayani" />
-        <img src="/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-6 w-auto object-contain hover:scale-110 transition-transform" />
-        <img src="/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-6 w-auto object-contain hover:scale-110 transition-transform" />
-        <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-6 w-auto max-w-[50px] object-contain hover:scale-110 transition-transform" title="Sobat SMP 2025" />
+        <img src="{base}/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-6 w-auto object-contain hover:scale-110 transition-transform" title="Tut Wuri Handayani" />
+        <img src="{base}/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-6 w-auto object-contain hover:scale-110 transition-transform" />
+        <img src="{base}/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-6 w-auto object-contain hover:scale-110 transition-transform" />
+        <img src="{base}/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-6 w-auto max-w-[50px] object-contain hover:scale-110 transition-transform" title="Sobat SMP 2025" />
       </div>
       <div class="hidden md:block w-[1px] h-6 bg-slate-300"></div>
       <div>
@@ -268,21 +269,21 @@
       <!-- Mode Navigation Switcher -->
       <div class="min-h-[48px] flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-full border border-slate-300/80 text-sm shadow-inner box-border">
         <a
-          href="/"
+          href="{base}/"
           class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold box-border"
         >
           <span>🔍</span>
           <span class="hidden sm:inline">Mode Eksplorasi</span>
         </a>
         <a
-          href="/simulasi"
+          href="{base}/simulasi"
           class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all text-xs font-semibold box-border"
         >
           <span>🚀</span>
           <span class="hidden sm:inline">Mode Simulasi</span>
         </a>
         <a
-          href="/kuis"
+          href="{base}/kuis"
           class="touch-target min-h-[45px] min-w-[45px] flex items-center gap-1.5 px-4 rounded-full bg-slate-900 text-white font-bold shadow-md text-xs transition-all box-border"
         >
           <span>🧩</span>
@@ -487,7 +488,6 @@
       ondragover={(e) => handleDragOver(e, 'bank')}
       ondragleave={() => handleDragLeave('bank')}
       ondrop={(e) => handleDrop(e, 'bank')}
-      role="region"
       aria-label="Bank Kartu Perangkat"
     >
       <div class="flex items-center justify-between">
@@ -510,9 +510,18 @@
         {:else}
           {#each bankItems as item (item.id)}
             <div
+              role="button"
+              tabindex="0"
               draggable="true"
               ondragstart={(e) => handleDragStart(e, item.id, null)}
               ondragend={handleDragEnd}
+              onkeydown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  // Cycle to next category: Input -> Process -> Storage -> Output -> Input
+                  moveItem(item.id, 'Input');
+                }
+              }}
               class="touch-target group relative flex items-center gap-2.5 min-h-[45px] px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 hover:border-sky-400 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing transition-all select-none box-border"
               class:opacity-40={draggedItemId === item.id}
             >
@@ -602,9 +611,17 @@
                 {@const isCorrect = item.correctCategory === cat.id}
 
                 <div
+                  role="button"
+                  tabindex="0"
                   draggable="true"
                   ondragstart={(e) => handleDragStart(e, item.id, cat.id)}
                   ondragend={handleDragEnd}
+                  onkeydown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      moveItem(item.id, 'bank');
+                    }
+                  }}
                   class="w-full rounded-xl p-3 border shadow-xs transition-all select-none cursor-grab active:cursor-grabbing relative box-border"
                   style={!isChecked
                     ? 'background-color: #ffffff; border-color: #cbd5e1;'
@@ -695,10 +712,10 @@
   <footer class="mt-auto py-4 border-t border-slate-200/90 bg-white/70 backdrop-blur-sm px-4">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
       <div class="flex items-center gap-2">
-        <img src="/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-6 w-auto object-contain" />
-        <img src="/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-6 w-auto object-contain" />
-        <img src="/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-6 w-auto object-contain" />
-        <img src="/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-6 w-auto max-w-[50px] object-contain" />
+        <img src="{base}/images/Tutwuri_3.png" alt="Tut Wuri Handayani" class="h-6 w-auto object-contain" />
+        <img src="{base}/images/Logo_02.png" alt="Logo Pendidikan 2" class="h-6 w-auto object-contain" />
+        <img src="{base}/images/Logo_03.png" alt="Logo Pendidikan 3" class="h-6 w-auto object-contain" />
+        <img src="{base}/images/LogoSobatSMP2025.png" alt="Sobat SMP" class="h-6 w-auto max-w-[50px] object-contain" />
         <span class="font-medium text-slate-600 ml-1">Media Pembelajaran Informatika Interaktif</span>
       </div>
       <p class="text-slate-400">Direktorat SMP • Kemdikbudristek</p>
