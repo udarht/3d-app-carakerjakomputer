@@ -14,7 +14,7 @@
 </script>
 
 <div
-  class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-500 font-['Plus_Jakarta_Sans',sans-serif]"
+  class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-500"
   class:opacity-0={isClosing}
   class:pointer-events-none={isClosing}
   class:scale-95={isClosing}

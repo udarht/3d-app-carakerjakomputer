@@ -47,7 +47,7 @@
     aria-modal="true"
     aria-label="Panduan Penggunaan Media Pembelajaran"
     tabindex="-1"
-    class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-opacity duration-200 font-['Plus_Jakarta_Sans',sans-serif]"
+    class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-opacity duration-200"
     class:opacity-0={isClosing}
     onclick={handleBackdropClick}
     onkeydown={(e) => { if (e.key === 'Escape') handleClose(); }}

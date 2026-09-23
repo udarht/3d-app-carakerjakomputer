@@ -59,7 +59,7 @@
 		height: 100%;
 		overflow: hidden;
 		background-color: #ffffff; /* Latar belakang putih bersih seperti web pada umumnya */
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Plus Jakarta Sans', sans-serif;
+		font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 		color: #0f172a;
 		-webkit-tap-highlight-color: transparent;
 	}

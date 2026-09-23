@@ -219,7 +219,7 @@
 <!-- Main Menu Dashboard Modal -->
 <MainMenu isOpen={isMenuOpen} onClose={() => (isMenuOpen = false)} />
 
-<div class="w-full h-full overflow-y-auto bg-slate-100 text-slate-900 font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
+<div class="w-full h-full overflow-y-auto bg-slate-100 text-slate-900 flex flex-col">
   <!-- TOP NAVIGATION HEADER (Light theme with subtle blur and border, consistent with 3D Viewer) -->
   <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-3 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 shadow-xs">
     <div class="flex items-center gap-2.5 sm:gap-3">

@@ -70,7 +70,7 @@
     aria-modal="true"
     aria-label="Hub Menu Utama Media Pembelajaran"
     tabindex="-1"
-    class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300 font-['Plus_Jakarta_Sans',sans-serif]"
+    class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300"
     onclick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     onkeydown={(e) => { if (e.key === 'Escape') onClose(); }}
   >
