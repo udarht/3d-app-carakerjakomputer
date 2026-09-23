@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { T } from '@threlte/core';
+  import { T, useThrelte } from '@threlte/core';
   import { OrbitControls } from '@threlte/extras';
+  import { PCFShadowMap } from 'three';
   import Monitor from './hardware/Monitor.svelte';
   import Keyboard from './hardware/Keyboard.svelte';
   import Mouse from './hardware/Mouse.svelte';
@@ -11,6 +12,11 @@
   import Harddisk from './hardware/Harddisk.svelte';
   import Speaker from './hardware/Speaker.svelte';
   import Printer from './hardware/Printer.svelte';
+
+  const { renderer } = useThrelte();
+  if (renderer) {
+    renderer.shadowMap.type = PCFShadowMap;
+  }
 
   let {
     selectedId = 'monitor',

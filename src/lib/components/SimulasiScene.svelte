@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { T, useTask } from '@threlte/core';
+  import { T, useTask, useThrelte } from '@threlte/core';
   import { OrbitControls, interactivity } from '@threlte/extras';
   import * as THREE from 'three';
   import Keyboard from './hardware/Keyboard.svelte';
@@ -7,6 +7,11 @@
   import Ram from './hardware/Ram.svelte';
   import Ssd from './hardware/Ssd.svelte';
   import Monitor from './hardware/Monitor.svelte';
+
+  const { renderer } = useThrelte();
+  if (renderer) {
+    renderer.shadowMap.type = THREE.PCFShadowMap;
+  }
 
   interactivity();
 

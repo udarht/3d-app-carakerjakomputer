@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Canvas } from '@threlte/core';
+  import { PCFShadowMap } from 'three';
   import Scene from './Scene.svelte';
 
   let {
@@ -18,7 +19,7 @@
 </script>
 
 <div class="canvas-wrapper">
-  <Canvas>
+  <Canvas shadows={PCFShadowMap}>
     <Scene {selectedId} {ssdVariant} {gpuVariant} {onVariantChange} {onGpuVariantChange} />
   </Canvas>
 </div>

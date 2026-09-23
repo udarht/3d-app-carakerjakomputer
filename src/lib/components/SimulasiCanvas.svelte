@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Canvas } from '@threlte/core';
+  import { PCFShadowMap } from 'three';
   import SimulasiScene from './SimulasiScene.svelte';
 
   let {
@@ -28,7 +29,7 @@
 </script>
 
 <div class="simulasi-canvas-wrapper">
-  <Canvas>
+  <Canvas shadows={PCFShadowMap}>
     <SimulasiScene
       {activeStep}
       {inputText}
