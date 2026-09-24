@@ -179,7 +179,7 @@
     isCorrect: boolean;
   }
 
-  let evaluatedList = $derived<EvaluatedItem[]>(() => {
+  let evaluatedList = $derived.by<EvaluatedItem[]>(() => {
     return quizItems.map((item) => {
       let placedCat: string | null = null;
       for (const cat of ['Input', 'Process', 'Storage', 'Output']) {
@@ -197,15 +197,15 @@
     });
   });
 
-  let filteredReviewList = $derived(() => {
-    const list = evaluatedList();
+  let filteredReviewList = $derived.by(() => {
+    const list = evaluatedList;
     if (reviewFilter === 'wrong') {
       return list.filter((x) => !x.isCorrect);
     }
     return list;
   });
 
-  let wrongCount = $derived(() => evaluatedList().filter((x) => !x.isCorrect).length);
+  let wrongCount = $derived(evaluatedList.filter((x) => !x.isCorrect).length);
 </script>
 
 <svelte:head>
@@ -405,9 +405,9 @@
                 : 'text-rose-700 hover:bg-rose-50'}"
             >
               <span>Hanya yang Salah</span>
-              {#if wrongCount() > 0}
+              {#if wrongCount > 0}
                 <span class="px-1.5 py-0.2 rounded-full text-[10px] {reviewFilter === 'wrong' ? 'bg-white text-rose-700' : 'bg-rose-100 text-rose-800'}">
-                  {wrongCount()}
+                  {wrongCount}
                 </span>
               {/if}
             </button>
@@ -415,7 +415,7 @@
         </div>
 
         <!-- Daftar Kartu Pembahasan Konsep -->
-        {#if filteredReviewList().length === 0}
+        {#if filteredReviewList.length === 0}
           <div class="py-8 text-center bg-emerald-50/60 rounded-xl border border-emerald-200/70 p-4">
             <span class="text-2xl mb-1 block">🎉</span>
             <span class="text-sm font-bold text-emerald-800">Hebat! Tidak ada jawaban yang salah!</span>
@@ -423,7 +423,7 @@
           </div>
         {:else}
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {#each filteredReviewList() as item (item.id)}
+            {#each filteredReviewList as item (item.id)}
               <div
                 class="p-4 rounded-xl border transition-all flex flex-col justify-between gap-2.5"
                 class:bg-emerald-50={item.isCorrect}
