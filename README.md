@@ -72,7 +72,7 @@ Uji pemahaman klasifikasi perangkat keras dengan mengelompokkan kartu perangkat 
 
 ### 1. Clone Repositori
 ```bash
-git clone https://github.com/username-anda/3d-app-carakerjakomputer.git
+git clone https://github.com/udarht/3d-app-carakerjakomputer.git
 cd 3d-app-carakerjakomputer
 ```
 
