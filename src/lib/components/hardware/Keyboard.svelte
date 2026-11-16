@@ -1,40 +1,55 @@
 <script lang="ts">
   import { T } from '@threlte/core';
-  import { interactivity } from '@threlte/extras';
+  import { interactivity, RoundedBoxGeometry } from '@threlte/extras';
   import * as THREE from 'three';
 
   interactivity();
 
-  // Create crisp CanvasTexture for keycap label completely offline using local system fonts
-  function createKeyLabelTexture(label: string, isPressed: boolean, isHovered: boolean): THREE.CanvasTexture {
+  const keyTextureCache = new Map<string, THREE.CanvasTexture>();
+
+  // Cached crisp CanvasTexture for keycap label completely offline using local system fonts
+  function createKeyLabelTexture(
+    label: string,
+    isPressed: boolean,
+    isHovered: boolean
+  ): THREE.CanvasTexture {
+    const cacheKey = `${label}|${isPressed ? 1 : 0}|${isHovered ? 1 : 0}`;
+    const cached = keyTextureCache.get(cacheKey);
+    if (cached) return cached;
+
+    if (typeof document === 'undefined') {
+      return new THREE.CanvasTexture(null as unknown as HTMLCanvasElement);
+    }
+
     const canvas = document.createElement('canvas');
     canvas.width = 256;
     canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Transparent canvas
     ctx.clearRect(0, 0, 256, 256);
 
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = isPressed ? '#93c5fd' : isHovered ? '#38bdf8' : '#f8fafc';
+    ctx.fillStyle = isPressed ? '#e0f2fe' : isHovered ? '#38bdf8' : '#f8fafc';
 
-    // Choose font size based on text length / symbol
-    let fontSize = 92;
+    let fontSize = 90;
     if (label.length > 5) {
-      fontSize = 46;
+      fontSize = 44;
     } else if (label.length > 2) {
-      fontSize = 58;
+      fontSize = 56;
     }
 
     ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`;
-    ctx.fillText(label, 128, 128);
+    ctx.fillText(label.toUpperCase(), 128, 128);
 
     const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
     texture.generateMipmaps = true;
     texture.minFilter = THREE.LinearMipmapLinearFilter;
     texture.magFilter = THREE.LinearFilter;
     texture.needsUpdate = true;
+
+    keyTextureCache.set(cacheKey, texture);
     return texture;
   }
 
@@ -47,40 +62,36 @@
   } = $props();
 
   let chassisHovered = $state(false);
-  let trackpadHovered = $state(false);
-  let trackpadPressed = $state(false);
   let activeKeyIndex = $state<string | null>(null);
   let pressedKeyIndex = $state<string | null>(null);
 
-  // Layout Chromebook specification:
-  // Standard full-width row = ~14.5 - 15 units in relative key units
   interface KeyDef {
     id: string;
     label: string;
-    width: number; // width in units (standard 1.0)
-    displayLabel?: string;
+    width: number;
+    variant?: 'alpha' | 'mod' | 'accent';
     fontSize?: number;
   }
 
-  // Row 1 (Shortcut/Top): 12 keys
+  // Row 1 (Function/Media Row): 12 keys
   const row1: KeyDef[] = [
-    { id: 'esc', label: 'esc', width: 1.15, fontSize: 0.055 },
-    { id: 'f1', label: '←', width: 1.0 },
-    { id: 'f2', label: '→', width: 1.0 },
-    { id: 'f3', label: '↻', width: 1.0 },
-    { id: 'f4', label: '⛶', width: 1.0 },
-    { id: 'f5', label: '▢', width: 1.0 },
-    { id: 'f6', label: '☼-', width: 1.0, fontSize: 0.055 },
-    { id: 'f7', label: '☼+', width: 1.0, fontSize: 0.055 },
-    { id: 'f8', label: '🔇', width: 1.0 },
-    { id: 'f9', label: '🔉', width: 1.0 },
-    { id: 'f10', label: '🔊', width: 1.0 },
-    { id: 'power', label: '⏻', width: 1.15 }
+    { id: 'esc', label: 'esc', width: 1.15, variant: 'accent', fontSize: 0.055 },
+    { id: 'f1', label: '←', width: 1.0, variant: 'mod' },
+    { id: 'f2', label: '→', width: 1.0, variant: 'mod' },
+    { id: 'f3', label: '↻', width: 1.0, variant: 'mod' },
+    { id: 'f4', label: '⛶', width: 1.0, variant: 'mod' },
+    { id: 'f5', label: '▢', width: 1.0, variant: 'mod' },
+    { id: 'f6', label: '☼-', width: 1.0, variant: 'mod', fontSize: 0.055 },
+    { id: 'f7', label: '☼+', width: 1.0, variant: 'mod', fontSize: 0.055 },
+    { id: 'f8', label: '🔇', width: 1.0, variant: 'mod' },
+    { id: 'f9', label: '🔉', width: 1.0, variant: 'mod' },
+    { id: 'f10', label: '🔊', width: 1.0, variant: 'mod' },
+    { id: 'power', label: '⏻', width: 1.15, variant: 'accent' }
   ];
 
-  // Row 2 (Angka): 13 keys
+  // Row 2 (Number Row)
   const row2: KeyDef[] = [
-    { id: '`', label: '`', width: 1.0 },
+    { id: '`', label: '`', width: 1.0, variant: 'mod' },
     { id: '1', label: '1', width: 1.0 },
     { id: '2', label: '2', width: 1.0 },
     { id: '3', label: '3', width: 1.0 },
@@ -93,12 +104,12 @@
     { id: '0', label: '0', width: 1.0 },
     { id: '-', label: '-', width: 1.0 },
     { id: '=', label: '=', width: 1.0 },
-    { id: 'backspace', label: 'backspace', width: 1.6, fontSize: 0.046 }
+    { id: 'backspace', label: '⌫ back', width: 1.6, variant: 'mod', fontSize: 0.046 }
   ];
 
-  // Row 3 (QWERTY): 14 keys
+  // Row 3 (QWERTY)
   const row3: KeyDef[] = [
-    { id: 'tab', label: 'tab', width: 1.45, fontSize: 0.052 },
+    { id: 'tab', label: 'tab ⇥', width: 1.45, variant: 'mod', fontSize: 0.052 },
     { id: 'q', label: 'q', width: 1.0 },
     { id: 'w', label: 'w', width: 1.0 },
     { id: 'e', label: 'e', width: 1.0 },
@@ -111,12 +122,12 @@
     { id: 'p', label: 'p', width: 1.0 },
     { id: '[', label: '[', width: 1.0 },
     { id: ']', label: ']', width: 1.0 },
-    { id: '\\', label: '\\', width: 1.15 }
+    { id: '\\', label: '\\', width: 1.15, variant: 'mod' }
   ];
 
-  // Row 4 (Home Row): 13 keys with search/🔍
+  // Row 4 (Home Row)
   const row4: KeyDef[] = [
-    { id: 'search', label: '🔍 search', width: 1.7, fontSize: 0.046 },
+    { id: 'search', label: '🔍 caps', width: 1.7, variant: 'mod', fontSize: 0.046 },
     { id: 'a', label: 'a', width: 1.0 },
     { id: 's', label: 's', width: 1.0 },
     { id: 'd', label: 'd', width: 1.0 },
@@ -128,12 +139,12 @@
     { id: 'l', label: 'l', width: 1.0 },
     { id: ';', label: ';', width: 1.0 },
     { id: "'", label: "'", width: 1.0 },
-    { id: 'enter', label: 'enter', width: 1.9, fontSize: 0.052 }
+    { id: 'enter', label: '↵ enter', width: 1.9, variant: 'accent', fontSize: 0.052 }
   ];
 
-  // Row 5 (Shift Row): 12 keys
+  // Row 5 (Shift Row)
   const row5: KeyDef[] = [
-    { id: 'shift_l', label: 'shift', width: 2.15, fontSize: 0.052 },
+    { id: 'shift_l', label: '⇧ shift', width: 2.15, variant: 'mod', fontSize: 0.052 },
     { id: 'z', label: 'z', width: 1.0 },
     { id: 'x', label: 'x', width: 1.0 },
     { id: 'c', label: 'c', width: 1.0 },
@@ -144,32 +155,30 @@
     { id: ',', label: ',', width: 1.0 },
     { id: '.', label: '.', width: 1.0 },
     { id: '/', label: '/', width: 1.0 },
-    { id: 'shift_r', label: 'shift', width: 2.45, fontSize: 0.052 }
+    { id: 'shift_r', label: '⇧ shift', width: 2.45, variant: 'mod', fontSize: 0.052 }
   ];
 
-  // Row 6 (Bottom): ctrl, alt, space, alt, ctrl
+  // Row 6 (Bottom Modifiers + Spacebar)
   const row6: KeyDef[] = [
-    { id: 'ctrl_l', label: 'ctrl', width: 1.45, fontSize: 0.052 },
-    { id: 'alt_l', label: 'alt', width: 1.3, fontSize: 0.052 },
-    { id: 'space', label: 'space', width: 7.1, fontSize: 0.048 },
-    { id: 'alt_r', label: 'alt', width: 1.3, fontSize: 0.052 },
-    { id: 'ctrl_r', label: 'ctrl', width: 1.45, fontSize: 0.052 }
+    { id: 'ctrl_l', label: 'ctrl', width: 1.45, variant: 'mod', fontSize: 0.052 },
+    { id: 'alt_l', label: 'alt', width: 1.3, variant: 'mod', fontSize: 0.052 },
+    { id: 'space', label: '', width: 7.1, variant: 'alpha', fontSize: 0.048 },
+    { id: 'alt_r', label: 'alt', width: 1.3, variant: 'mod', fontSize: 0.052 },
+    { id: 'ctrl_r', label: 'ctrl', width: 1.45, variant: 'mod', fontSize: 0.052 }
   ];
 
   const KEYBOARD_ROWS = [row1, row2, row3, row4, row5, row6];
 
-  // Dimensions
-  const UNIT_SIZE = 0.205; // Base pitch per unit
-  const KEY_GAP = 0.016; // Inter-key spacing
-  const KEY_DEPTH = 0.19; // Keycap depth along Z
-  const KEY_TOP_ROW_DEPTH = 0.14; // Thinner function row
-  const TOTAL_ROW_WIDTH = 3.12; // Total active width of keyboard row
-  const KEY_HEIGHT = 0.04; // Chiclet height
+  const KEY_GAP = 0.017;
+  const KEY_DEPTH = 0.188;
+  const KEY_TOP_ROW_DEPTH = 0.145;
+  const TOTAL_ROW_WIDTH = 3.12;
+  const KEY_HEIGHT = 0.048;
 
-  // Pre-calculate key positions per row so everything is centered
   interface PositionedKey {
     id: string;
     label: string;
+    variant: 'alpha' | 'mod' | 'accent';
     fontSize: number;
     x: number;
     z: number;
@@ -177,8 +186,7 @@
     d: number;
   }
 
-  // Centered around Z=0 for external keyboard
-  const rowZPositions = [-0.50, -0.30, -0.10, 0.10, 0.30, 0.50];
+  const rowZPositions = [-0.5, -0.3, -0.1, 0.1, 0.3, 0.5];
 
   function computeRowKeys(keys: KeyDef[], zPos: number, isTopRow = false): PositionedKey[] {
     const totalUnits = keys.reduce((sum, k) => sum + k.width, 0);
@@ -196,6 +204,7 @@
       result.push({
         id: k.id,
         label: k.label,
+        variant: k.variant ?? 'alpha',
         fontSize: k.fontSize ?? 0.065,
         x,
         z: zPos,
@@ -210,6 +219,14 @@
   const computedKeyRows: PositionedKey[][] = KEYBOARD_ROWS.map((row, idx) =>
     computeRowKeys(row, rowZPositions[idx], idx === 0)
   );
+
+  function getKeyBaseColor(variant: 'alpha' | 'mod' | 'accent', isPressed: boolean, isHovered: boolean) {
+    if (isPressed) return '#2563eb';
+    if (isHovered) return '#334155';
+    if (variant === 'accent') return '#0284c7';
+    if (variant === 'mod') return '#334155';
+    return '#1e293b';
+  }
 
   function handleKeyEnter(id: string, e: any) {
     e.stopPropagation();
@@ -253,168 +270,169 @@
   }}
 >
   <!-- ============================================== -->
-  <!-- 1. STANDALONE EXTERNAL KEYBOARD CHASSIS -->
+  <!-- 1. CNC ANODIZED ALUMINUM CUSTOM KEYBOARD CHASSIS -->
   <!-- ============================================== -->
-  <!-- Bottom Base Plate (Aluminium anodized bottom with ergonomic wedge tilt) -->
-  <T.Mesh position={[0, 0.045, 0]}>
-    <T.BoxGeometry args={[3.38, 0.08, 1.48]} />
-    <T.MeshStandardMaterial
-      color={chassisHovered ? '#334155' : '#1e293b'}
-      roughness={0.4}
-      metalness={0.7}
+  <!-- Lower CNC Aluminum Case Body -->
+  <T.Mesh position={[0, 0.048, 0]} castShadow receiveShadow>
+    <RoundedBoxGeometry args={[3.42, 0.088, 1.52]} radius={0.035} smoothness={4} />
+    <T.MeshPhysicalMaterial
+      color="#1e293b"
+      roughness={0.28}
+      metalness={0.82}
+      clearcoat={0.25}
     />
   </T.Mesh>
 
-  <!-- Top Bevel Housing Plate (Dark aluminium finish) -->
-  <T.Mesh position={[0, 0.09, 0]}>
-    <T.BoxGeometry args={[3.34, 0.02, 1.44]} />
-    <T.MeshStandardMaterial
-      color={chassisHovered ? '#475569' : '#334155'}
-      roughness={0.35}
-      metalness={0.8}
+  <!-- Upper Beveled Aluminum Top Frame -->
+  <T.Mesh position={[0, 0.092, 0]} castShadow receiveShadow>
+    <RoundedBoxGeometry args={[3.36, 0.026, 1.46]} radius={0.025} smoothness={4} />
+    <T.MeshPhysicalMaterial
+      color="#334155"
+      roughness={0.25}
+      metalness={0.86}
+      clearcoat={0.3}
     />
   </T.Mesh>
 
-  <!-- Chamfered Outer Edge Accent (Premium chamfer line) -->
-  <T.Mesh position={[0, 0.098, 0]}>
-    <T.BoxGeometry args={[3.32, 0.006, 1.42]} />
-    <T.MeshStandardMaterial
-      color="#64748b"
-      roughness={0.3}
-      metalness={0.85}
-    />
+  <!-- Underside Brushed Brass Acoustic Weight Bar -->
+  <T.Mesh position={[0, 0.003, -0.15]}>
+    <RoundedBoxGeometry args={[2.1, 0.01, 0.48]} radius={0.005} smoothness={2} />
+    <T.MeshPhysicalMaterial color="#f59e0b" metalness={0.92} roughness={0.18} />
   </T.Mesh>
 
+  <!-- Side RGB Underglow Diffuser Strips (Left & Right Flanks) -->
+  {#each [-1.71, 1.71] as x}
+    <T.Mesh position={[x, 0.045, 0]}>
+      <T.BoxGeometry args={[0.012, 0.02, 1.15]} />
+      <T.MeshStandardMaterial
+        color="#38bdf8"
+        emissive="#0284c7"
+        emissiveIntensity={chassisHovered ? 1.2 : 0.65}
+      />
+    </T.Mesh>
+  {/each}
+
   <!-- ============================================== -->
-  <!-- 2. RECESSED KEY BED (Ceruk Tombol Presisi) -->
+  <!-- 2. RECESSED SWITCH PLATE & PER-KEY BACKLIGHT GLOW -->
   <!-- ============================================== -->
-  <T.Mesh position={[0, 0.095, 0]}>
+  <T.Mesh position={[0, 0.096, 0]} receiveShadow>
     <T.BoxGeometry args={[3.2, 0.012, 1.3]} />
-    <T.MeshStandardMaterial
-      color="#0f172a"
-      roughness={0.7}
-      metalness={0.3}
+    <T.MeshStandardMaterial color="#0f172a" roughness={0.5} metalness={0.4} />
+  </T.Mesh>
+
+  <!-- Subtle Per-Key Backlight Bleeding Sheet on Switch Plate -->
+  <T.Mesh position={[0, 0.103, 0]} rotation.x={-Math.PI / 2}>
+    <T.PlaneGeometry args={[3.14, 1.24]} />
+    <T.MeshBasicMaterial
+      color="#38bdf8"
+      transparent
+      opacity={chassisHovered ? 0.22 : 0.12}
     />
   </T.Mesh>
 
-  <!-- Subtle Inner Border Trim -->
-  <T.Mesh position={[0, 0.102, -0.655]}>
-    <T.BoxGeometry args={[3.22, 0.008, 0.012]} />
-    <T.MeshStandardMaterial color="#475569" roughness={0.4} metalness={0.6} />
-  </T.Mesh>
-  <T.Mesh position={[0, 0.102, 0.655]}>
-    <T.BoxGeometry args={[3.22, 0.008, 0.012]} />
-    <T.MeshStandardMaterial color="#475569" roughness={0.4} metalness={0.6} />
-  </T.Mesh>
-  <T.Mesh position={[-1.605, 0.102, 0]}>
-    <T.BoxGeometry args={[0.012, 0.008, 1.31]} />
-    <T.MeshStandardMaterial color="#475569" roughness={0.4} metalness={0.6} />
-  </T.Mesh>
-  <T.Mesh position={[1.605, 0.102, 0]}>
-    <T.BoxGeometry args={[0.012, 0.008, 1.31]} />
-    <T.MeshStandardMaterial color="#475569" roughness={0.4} metalness={0.6} />
-  </T.Mesh>
-
   <!-- ============================================== -->
-  <!-- 3. EXTERNAL HARDWARE DETAILS (USB-C & Feet & LED) -->
+  <!-- 3. DETACHABLE USB-C PORT, INDICATOR LEDS & RUBBER FEET -->
   <!-- ============================================== -->
-  <!-- Rear USB-C Connector Port -->
-  <T.Mesh position={[0, 0.05, -0.74]}>
-    <T.BoxGeometry args={[0.16, 0.035, 0.015]} />
+  <!-- Rear Gold-Plated USB-C Female Port Housing -->
+  <T.Mesh position={[0, 0.055, -0.76]}>
+    <RoundedBoxGeometry args={[0.22, 0.05, 0.02]} radius={0.01} smoothness={2} />
+    <T.MeshPhysicalMaterial color="#94a3b8" metalness={0.9} roughness={0.2} />
+  </T.Mesh>
+  <T.Mesh position={[0, 0.055, -0.768]}>
+    <T.BoxGeometry args={[0.14, 0.022, 0.01]} />
     <T.MeshStandardMaterial color="#020617" roughness={0.9} />
   </T.Mesh>
-  <!-- USB-C Inner Port Contact -->
-  <T.Mesh position={[0, 0.05, -0.742]}>
-    <T.BoxGeometry args={[0.1, 0.015, 0.01]} />
-    <T.MeshStandardMaterial color="#d4af37" metalness={0.9} roughness={0.2} />
-  </T.Mesh>
 
-  <!-- Power / Bluetooth LED Indicator Dot -->
-  <T.Mesh position={[1.45, 0.103, -0.67]}>
-    <T.CylinderGeometry args={[0.012, 0.012, 0.005, 16]} />
-    <T.MeshStandardMaterial
-      color={chassisHovered ? '#38bdf8' : '#10b981'}
-      emissive={chassisHovered ? '#38bdf8' : '#10b981'}
-      emissiveIntensity={0.8}
-    />
-  </T.Mesh>
+  <!-- Status Indicator LED Trio (Caps, Wireless, Battery) -->
+  {#each [1.38, 1.45, 1.52] as lx, idx}
+    <T.Mesh position={[lx, 0.106, -0.68]}>
+      <T.CylinderGeometry args={[0.01, 0.01, 0.005, 16]} />
+      <T.MeshStandardMaterial
+        color={idx === 0 ? '#38bdf8' : idx === 1 ? '#a855f7' : '#10b981'}
+        emissive={idx === 0 ? '#38bdf8' : idx === 1 ? '#a855f7' : '#10b981'}
+        emissiveIntensity={1.2}
+      />
+    </T.Mesh>
+  {/each}
 
-  <!-- Non-slip Rubber Feet (4 corners under keyboard) -->
-  <T.Mesh position={[-1.5, 0.002, 0.6]}>
-    <T.CylinderGeometry args={[0.04, 0.04, 0.01, 16]} />
-    <T.MeshStandardMaterial color="#0f172a" roughness={0.9} />
-  </T.Mesh>
-  <T.Mesh position={[1.5, 0.002, 0.6]}>
-    <T.CylinderGeometry args={[0.04, 0.04, 0.01, 16]} />
-    <T.MeshStandardMaterial color="#0f172a" roughness={0.9} />
-  </T.Mesh>
-  <T.Mesh position={[-1.5, 0.002, -0.6]}>
-    <T.CylinderGeometry args={[0.04, 0.04, 0.01, 16]} />
-    <T.MeshStandardMaterial color="#0f172a" roughness={0.9} />
-  </T.Mesh>
-  <T.Mesh position={[1.5, 0.002, -0.6]}>
-    <T.CylinderGeometry args={[0.04, 0.04, 0.01, 16]} />
-    <T.MeshStandardMaterial color="#0f172a" roughness={0.9} />
-  </T.Mesh>
-
-  <!-- Rear ergonomic tilt risers / feet -->
-  <T.Mesh position={[-1.3, 0.01, -0.58]}>
-    <T.BoxGeometry args={[0.2, 0.02, 0.06]} />
-    <T.MeshStandardMaterial color="#334155" roughness={0.7} />
-  </T.Mesh>
-  <T.Mesh position={[1.3, 0.01, -0.58]}>
-    <T.BoxGeometry args={[0.2, 0.02, 0.06]} />
-    <T.MeshStandardMaterial color="#334155" roughness={0.7} />
-  </T.Mesh>
+  <!-- 4 Non-Slip Silicone Feet & Flip-Out Kickstands -->
+  {#each [-1.52, 1.52] as fx}
+    {#each [-0.62, 0.62] as fz}
+      <T.Mesh position={[fx, 0.004, fz]}>
+        <T.CylinderGeometry args={[0.05, 0.05, 0.012, 16]} />
+        <T.MeshStandardMaterial color="#090d16" roughness={0.9} />
+      </T.Mesh>
+    {/each}
+    <T.Mesh position={[fx * 0.85, 0.012, -0.58]}>
+      <RoundedBoxGeometry args={[0.22, 0.025, 0.08]} radius={0.006} smoothness={2} />
+      <T.MeshStandardMaterial color="#334155" roughness={0.5} metalness={0.5} />
+    </T.Mesh>
+  {/each}
 
   <!-- ============================================== -->
-  <!-- 4. CHICLET KEYCAPS MATRIX & LABELS -->
+  <!-- 4. SCULPTED PBT KEYCAPS & MECHANICAL SWITCH STEMS -->
   <!-- ============================================== -->
   {#each computedKeyRows as rowKeys}
     {#each rowKeys as key (key.id)}
       {@const isHovered = activeKeyIndex === key.id}
       {@const isPressed = pressedKeyIndex === key.id}
-      {@const keyY = 0.115 + (isPressed ? -0.016 : isHovered ? -0.005 : 0)}
+      {@const keyY = 0.122 + (isPressed ? -0.018 : isHovered ? -0.005 : 0)}
+      {@const keyColor = getKeyBaseColor(key.variant, isPressed, isHovered)}
 
       <T.Group position={[key.x, keyY, key.z]}>
-        <!-- Keycap Mesh (Chiclet balok tipis, matte abu-abu gelap / hitam) -->
+        <!-- Mechanical Switch Housing / Stem Under Keycap -->
+        <T.Mesh position={[0, -0.018, 0]}>
+          <T.BoxGeometry args={[key.w * 0.72, 0.016, key.d * 0.72]} />
+          <T.MeshStandardMaterial
+            color="#38bdf8"
+            emissive="#0284c7"
+            emissiveIntensity={isPressed ? 1.4 : isHovered ? 0.8 : 0.25}
+          />
+        </T.Mesh>
+
+        <!-- Sculpted Doubleshot PBT Keycap with Rounded Bevel Edges -->
         <T.Mesh
+          castShadow
+          receiveShadow
           onpointerenter={(e: any) => handleKeyEnter(key.id, e)}
           onpointerleave={(e: any) => handleKeyLeave(key.id, e)}
           onpointerdown={(e: any) => handleKeyPointerDown(key.id, e)}
           onpointerup={(e: any) => handleKeyPointerUp(key.id, e)}
           onclick={(e: any) => handleKeyClick(key.id, e)}
         >
-          <T.BoxGeometry args={[key.w, KEY_HEIGHT, key.d]} />
-          <T.MeshStandardMaterial
-            color={isPressed ? '#2563eb' : isHovered ? '#334155' : '#1e2025'}
-            roughness={0.5}
-            metalness={0.1}
+          <RoundedBoxGeometry args={[key.w, KEY_HEIGHT, key.d]} radius={0.012} smoothness={3} />
+          <T.MeshPhysicalMaterial
+            color={keyColor}
+            roughness={0.42}
+            metalness={0.08}
+            clearcoat={0.15}
+            clearcoatRoughness={0.35}
             emissive={isPressed ? '#1d4ed8' : isHovered ? '#0284c7' : '#000000'}
-            emissiveIntensity={isPressed ? 0.7 : isHovered ? 0.3 : 0}
+            emissiveIntensity={isPressed ? 0.6 : isHovered ? 0.25 : 0}
           />
         </T.Mesh>
 
-        <!-- Subtle keycap underside skirt / switch stem visual -->
-        {#if isHovered || isPressed}
-          <T.Mesh position={[0, -0.015, 0]}>
-            <T.BoxGeometry args={[key.w * 0.9, 0.01, key.d * 0.9]} />
-            <T.MeshStandardMaterial color="#0284c7" emissive="#38bdf8" emissiveIntensity={0.5} />
+        <!-- Tactile Homing Bar on F and J Keys -->
+        {#if key.id === 'f' || key.id === 'j'}
+          <T.Mesh position={[0, KEY_HEIGHT / 2 + 0.002, 0.045]}>
+            <T.BoxGeometry args={[0.06, 0.004, 0.012]} />
+            <T.MeshStandardMaterial color="#94a3b8" roughness={0.3} />
           </T.Mesh>
         {/if}
 
-        <!-- Key Label Mesh using CanvasTexture (100% offline-ready, no Google Fonts request) -->
-        <T.Mesh position={[0, KEY_HEIGHT / 2 + 0.001, 0]} rotation.x={-Math.PI / 2}>
-          <T.PlaneGeometry args={[key.w * 0.9, key.d * 0.85]} />
-          <T.MeshBasicMaterial
-            map={createKeyLabelTexture(key.label, isPressed, isHovered)}
-            transparent
-            opacity={0.95}
-            depthWrite={false}
-          />
-        </T.Mesh>
+        <!-- Keycap Legend Texture -->
+        {#if key.label}
+          <T.Mesh position={[0, KEY_HEIGHT / 2 + 0.0015, 0]} rotation.x={-Math.PI / 2}>
+            <T.PlaneGeometry args={[key.w * 0.88, key.d * 0.82]} />
+            <T.MeshBasicMaterial
+              map={createKeyLabelTexture(key.label, isPressed, isHovered)}
+              transparent
+              opacity={0.96}
+              depthWrite={false}
+            />
+          </T.Mesh>
+        {/if}
       </T.Group>
     {/each}
   {/each}
 </T.Group>
-

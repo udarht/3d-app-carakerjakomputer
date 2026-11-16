@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Canvas } from '@threlte/core';
-  import { PCFShadowMap } from 'three';
+  import { ACESFilmicToneMapping, PCFSoftShadowMap } from 'three';
   import SimulasiScene from './SimulasiScene.svelte';
 
   let {
@@ -29,7 +29,7 @@
 </script>
 
 <div class="simulasi-canvas-wrapper">
-  <Canvas shadows={PCFShadowMap}>
+  <Canvas shadows={PCFSoftShadowMap} toneMapping={ACESFilmicToneMapping}>
     <SimulasiScene
       {activeStep}
       {inputText}

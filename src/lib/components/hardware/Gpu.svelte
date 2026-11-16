@@ -1,11 +1,16 @@
 <script lang="ts">
   import { T, useTask } from '@threlte/core';
-  import { interactivity, HTML } from '@threlte/extras';
+  import { interactivity, HTML, RoundedBoxGeometry } from '@threlte/extras';
+  import {
+    getCpuLgaPadsTexture,
+    getGoldPinsTexture,
+    getPcbCircuitTexture
+  } from '$lib/utils/textures';
 
   interactivity();
 
   let {
-    position = [0, 0.5, 0] as [number, number, number],
+    position = [0, 0.55, 0] as [number, number, number],
     rotation = [0.35, 0, 0] as [number, number, number],
     autoRotate = true,
     showOverlay = true,
@@ -28,6 +33,16 @@
   let hovered = $state(false);
   let fanRot = $state(0);
 
+  const igpuPcbTex = getPcbCircuitTexture('#064e3b', '#10b981');
+  const dgpuPcbTex = getPcbCircuitTexture('#0f172a', '#38bdf8');
+  const lgaPadsTex = getCpuLgaPadsTexture();
+  const pciePinsTex = getGoldPinsTexture(48);
+
+  // 28 individual aluminum heatsink fins for realistic fin stack
+  const finPositions = Array.from({ length: 28 }, (_, i) => -1.75 + i * 0.13);
+  // 9 fan blade angles
+  const fanBladeAngles = [0, 40, 80, 120, 160, 200, 240, 280, 320];
+
   function setVariant(variant: 'integrated' | 'dedicated') {
     localActiveVariant = variant;
     onVariantChange?.(variant);
@@ -37,7 +52,7 @@
     if (autoRotate && !isPaused) {
       rotY += delta * 0.4;
     }
-    fanRot += delta * 8.0;
+    fanRot += delta * 9.0;
   });
 
   function toggleClick(e: any) {
@@ -50,279 +65,299 @@
 <T.Group
   {position}
   rotation={[rotation[0], rotation[1] + rotY, rotation[2]]}
-  scale={hovered ? 1.05 : 1}
+  scale={hovered ? 1.04 : 1}
   onpointerenter={() => (hovered = true)}
   onpointerleave={() => (hovered = false)}
   onclick={toggleClick}
 >
   {#if activeVariant === 'integrated'}
     <!-- ============================================== -->
-    <!-- VARIAN 1: INTEGRATED GPU (iGPU) -->
-    <!-- Bentuk chip persegi ringkas: PCB hijau/hitam, silicon die berkilau di tengah, deretan pin emas di bawah -->
+    <!-- VARIAN 1: INTEGRATED GPU (iGPU / SoC Architecture) -->
     <!-- ============================================== -->
     <T.Group position={[0, 0, 0]}>
-      <!-- 1. PCB Substrate (Hijau Zamrud Bersih / Gelap Elegan) -->
-      <T.Mesh position={[0, 0, 0]}>
-        <T.BoxGeometry args={[2.5, 0.08, 2.5]} />
-        <T.MeshStandardMaterial
-          color="#064e3b"
-          roughness={0.4}
+      <!-- 1. Multi-Layer Emerald FR4 Substrate -->
+      <T.Mesh position={[0, 0, 0]} castShadow receiveShadow>
+        <RoundedBoxGeometry args={[2.6, 0.085, 2.6]} radius={0.03} smoothness={4} />
+        <T.MeshPhysicalMaterial
+          map={igpuPcbTex}
+          color="#065f46"
+          roughness={0.38}
           metalness={0.2}
+          clearcoat={0.3}
         />
       </T.Mesh>
 
-      <!-- 2. Bottom Gold Pin Grid Array / Contact Pads -->
-      <T.Mesh position={[0, -0.045, 0]}>
-        <T.BoxGeometry args={[2.2, 0.01, 2.2]} />
-        <T.MeshStandardMaterial
-          color="#f59e0b"
-          roughness={0.35}
-          metalness={0.3}
+      <!-- 2. Underside Gold BGA/LGA Contact Matrix -->
+      <T.Mesh position={[0, -0.045, 0]} rotation.x={Math.PI / 2}>
+        <T.PlaneGeometry args={[2.4, 2.4]} />
+        <T.MeshStandardMaterial map={lgaPadsTex} roughness={0.25} metalness={0.85} />
+      </T.Mesh>
+
+      <!-- 3. Nickel Stiffener Frame Around Silicon Die -->
+      <T.Mesh position={[0, 0.055, 0]} castShadow>
+        <RoundedBoxGeometry args={[2.25, 0.03, 2.25]} radius={0.02} smoothness={3} />
+        <T.MeshPhysicalMaterial color="#cbd5e1" roughness={0.25} metalness={0.88} />
+      </T.Mesh>
+      <T.Mesh position={[0, 0.058, 0]}>
+        <T.BoxGeometry args={[1.82, 0.032, 1.82]} />
+        <T.MeshStandardMaterial map={igpuPcbTex} color="#064e3b" roughness={0.4} />
+      </T.Mesh>
+
+      <!-- 4. Exposed Mirror-Polished SoC Silicon Die (CPU + iGPU Tile) -->
+      <T.Mesh position={[0, 0.095, 0]} castShadow>
+        <RoundedBoxGeometry args={[1.42, 0.065, 1.15]} radius={0.015} smoothness={3} />
+        <T.MeshPhysicalMaterial
+          color="#0f172a"
+          roughness={0.06}
+          metalness={0.95}
+          clearcoat={1.0}
+          clearcoatRoughness={0.04}
         />
       </T.Mesh>
 
-      <!-- 3. Central Shiny Silicon Die (Kepingan Silikon Mengkilap) -->
-      <T.Mesh position={[0, 0.08, 0]}>
-        <T.BoxGeometry args={[1.3, 0.08, 1.3]} />
-        <T.MeshStandardMaterial
-          color="#1e293b"
-          roughness={0.2}
-          metalness={0.6}
-          emissive={showDetails ? '#0284c7' : '#000000'}
-          emissiveIntensity={showDetails ? 0.35 : 0}
+      <!-- CPU Cores Zone (Left Tile) -->
+      <T.Mesh position={[-0.34, 0.13, 0]}>
+        <T.BoxGeometry args={[0.56, 0.008, 0.98]} />
+        <T.MeshPhysicalMaterial
+          color="#6366f1"
+          emissive="#4f46e5"
+          emissiveIntensity={0.35}
+          roughness={0.12}
+          metalness={0.85}
         />
       </T.Mesh>
 
-      <!-- Silicon Die Reflective Core Accent -->
-      <T.Mesh position={[0, 0.125, 0]}>
-        <T.BoxGeometry args={[1.05, 0.01, 1.05]} />
-        <T.MeshStandardMaterial
+      <!-- iGPU Compute Shaders Zone (Right Highlighted Tile) -->
+      <T.Mesh position={[0.3, 0.132, 0]}>
+        <T.BoxGeometry args={[0.62, 0.01, 0.98]} />
+        <T.MeshPhysicalMaterial
           color="#38bdf8"
-          roughness={0.15}
-          metalness={0.7}
-          emissive="#38bdf8"
-          emissiveIntensity={0.2}
+          emissive="#0284c7"
+          emissiveIntensity={showDetails ? 1.1 : 0.65}
+          roughness={0.1}
+          metalness={0.9}
+          clearcoat={1.0}
         />
       </T.Mesh>
 
-      <!-- 4. Corner Alignment Mark (Segitiga Emas Penanda Sudut) -->
-      <T.Mesh position={[-1.05, 0.045, -1.05]} rotation.y={Math.PI / 4}>
-        <T.ConeGeometry args={[0.1, 0.015, 3]} />
-        <T.MeshStandardMaterial
-          color="#fbbf24"
-          emissive="#f59e0b"
-          emissiveIntensity={0.6}
-          roughness={0.3}
-          metalness={0.4}
-        />
-      </T.Mesh>
-
-      <!-- 5. Surrounding SMD Capacitors & Resistors (Komponen Mikro Pelindung) -->
-      {#each [-0.85, 0.85] as x}
-        {#each [-0.5, 0, 0.5] as z}
-          <T.Mesh position={[x, 0.05, z]}>
-            <T.BoxGeometry args={[0.12, 0.03, 0.2]} />
-            <T.MeshStandardMaterial color="#94a3b8" roughness={0.4} metalness={0.2} />
-          </T.Mesh>
-        {/each}
+      <!-- Shader Core Sub-Grid Lines on iGPU Tile -->
+      {#each [-0.32, 0, 0.32] as sz}
+        <T.Mesh position={[0.3, 0.138, sz]}>
+          <T.BoxGeometry args={[0.54, 0.005, 0.22]} />
+          <T.MeshStandardMaterial
+            color="#e0f2fe"
+            emissive="#38bdf8"
+            emissiveIntensity={0.8}
+            metalness={0.9}
+            roughness={0.1}
+          />
+        </T.Mesh>
       {/each}
 
-      {#each [-0.5, 0, 0.5] as x}
-        {#each [-0.85, 0.85] as z}
-          <T.Mesh position={[x, 0.05, z]}>
-            <T.BoxGeometry args={[0.2, 0.03, 0.12]} />
-            <T.MeshStandardMaterial color="#94a3b8" roughness={0.4} metalness={0.2} />
+      <!-- 5. Gold Pin-1 Corner Triangle -->
+      <T.Mesh position={[-1.08, 0.075, 1.08]} rotation.y={-Math.PI / 4}>
+        <T.ConeGeometry args={[0.09, 0.012, 3]} />
+        <T.MeshStandardMaterial color="#fbbf24" roughness={0.2} metalness={0.9} />
+      </T.Mesh>
+
+      <!-- 6. Surrounding Micro SMD MLCC Decoupling Capacitors -->
+      {#each [-0.55, -0.2, 0.2, 0.55] as pos}
+        {#each [-0.76, 0.76] as side}
+          <T.Mesh position={[pos, 0.082, side]}>
+            <T.BoxGeometry args={[0.14, 0.025, 0.06]} />
+            <T.MeshStandardMaterial color="#b45309" roughness={0.35} metalness={0.3} />
           </T.Mesh>
         {/each}
       {/each}
     </T.Group>
   {:else}
     <!-- ============================================== -->
-    <!-- VARIAN 2: DEDICATED GPU (dGPU) -->
-    <!-- Bentuk kartu grafis mandiri: PCB persegi panjang horizontal, PCIe connector di bawah, shroud perak cerah, 2 kipas berputar -->
+    <!-- VARIAN 2: DEDICATED GPU (dGPU PCIe 4.0 x16 Graphics Card) -->
     <!-- ============================================== -->
     <T.Group position={[0, 0, 0]}>
-      <!-- 1. Main PCB Board Horizontal (Papan sirkuit kartu grafis) -->
-      <T.Mesh position={[0, 0, 0]}>
-        <T.BoxGeometry args={[4.4, 0.09, 2.2]} />
-        <T.MeshStandardMaterial
-          color="#1e293b"
+      <!-- 1. High-Density Matte Black GPU PCB -->
+      <T.Mesh position={[0, 0, 0]} castShadow receiveShadow>
+        <RoundedBoxGeometry args={[4.4, 0.08, 2.2]} radius={0.02} smoothness={3} />
+        <T.MeshPhysicalMaterial
+          map={dgpuPcbTex}
+          color="#0f172a"
           roughness={0.4}
-          metalness={0.2}
+          metalness={0.25}
+          clearcoat={0.2}
         />
       </T.Mesh>
 
-      <!-- 2. PCIe Gold Connector Pins (Sisi Bawah Depan / Slot PCIe x16) -->
-      <T.Mesh position={[-0.2, -0.01, 1.15]}>
-        <T.BoxGeometry args={[2.5, 0.07, 0.16]} />
-        <T.MeshStandardMaterial
-          color="#f59e0b"
-          roughness={0.4}
-          metalness={0.2}
-        />
+      <!-- 2. PCIe x16 Gold Edge Connector + Retention Hook -->
+      <!-- Short Power Pins Section -->
+      <T.Mesh position={[-1.12, -0.01, 1.16]}>
+        <T.BoxGeometry args={[0.42, 0.055, 0.16]} />
+        <T.MeshStandardMaterial map={pciePinsTex} color="#fbbf24" metalness={0.9} roughness={0.2} />
+      </T.Mesh>
+      <!-- Long x16 Data Lanes Section -->
+      <T.Mesh position={[0.08, -0.01, 1.16]}>
+        <T.BoxGeometry args={[1.82, 0.055, 0.16]} />
+        <T.MeshStandardMaterial map={pciePinsTex} color="#fbbf24" metalness={0.9} roughness={0.2} />
+      </T.Mesh>
+      <!-- PCIe Retention Lock Tab -->
+      <T.Mesh position={[1.12, -0.01, 1.15]}>
+        <T.BoxGeometry args={[0.16, 0.06, 0.14]} />
+        <T.MeshStandardMaterial color="#0f172a" roughness={0.5} />
       </T.Mesh>
 
-      <!-- PCIe Key Notch -->
-      <T.Mesh position={[-0.6, -0.01, 1.15]}>
-        <T.BoxGeometry args={[0.1, 0.08, 0.18]} />
-        <T.MeshStandardMaterial color="#0f172a" roughness={0.6} />
+      <!-- 3. Stainless Steel Dual-Slot Rear I/O Bracket -->
+      <T.Mesh position={[-2.24, 0.34, 0]} castShadow>
+        <RoundedBoxGeometry args={[0.07, 1.05, 2.32]} radius={0.015} smoothness={3} />
+        <T.MeshPhysicalMaterial color="#cbd5e1" roughness={0.22} metalness={0.9} />
+      </T.Mesh>
+      <!-- Bracket Top Mounting Flange -->
+      <T.Mesh position={[-2.32, 0.34, -1.16]}>
+        <T.BoxGeometry args={[0.22, 1.05, 0.05]} />
+        <T.MeshPhysicalMaterial color="#cbd5e1" roughness={0.22} metalness={0.9} />
       </T.Mesh>
 
-      <!-- 3. Rear Metal I/O Bracket (Braket Belakang Port Display) -->
-      <T.Mesh position={[-2.24, 0.35, 0]}>
-        <T.BoxGeometry args={[0.08, 1.1, 2.3]} />
-        <T.MeshStandardMaterial
-          color="#cbd5e1"
-          roughness={0.4}
-          metalness={0.2}
-        />
-      </T.Mesh>
-
-      <!-- Display Ports on I/O Bracket (HDMI / DP) -->
-      {#each [-0.5, 0.1, 0.7] as z}
-        <T.Mesh position={[-2.29, 0.32, z]}>
-          <T.BoxGeometry args={[0.04, 0.14, 0.32]} />
-          <T.MeshStandardMaterial color="#475569" roughness={0.5} metalness={0.3} />
-        </T.Mesh>
+      <!-- 3x DisplayPort + 1x HDMI Gold-Plated Port Housings -->
+      {#each [-0.65, -0.2, 0.25, 0.7] as z, idx}
+        <T.Group position={[-2.28, 0.26, z]}>
+          <T.Mesh>
+            <T.BoxGeometry args={[0.06, 0.13, idx === 3 ? 0.28 : 0.32]} />
+            <T.MeshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.7} />
+          </T.Mesh>
+          <T.Mesh position={[-0.02, 0, 0]}>
+            <T.BoxGeometry args={[0.03, 0.04, 0.2]} />
+            <T.MeshStandardMaterial color="#fbbf24" roughness={0.25} metalness={0.9} />
+          </T.Mesh>
+        </T.Group>
       {/each}
 
-      <!-- 4. Backplate Penguat (Sisi Bawah PCB) -->
-      <T.Mesh position={[0, -0.06, 0]}>
-        <T.BoxGeometry args={[4.2, 0.03, 2.1]} />
-        <T.MeshStandardMaterial
-          color="#334155"
-          roughness={0.4}
-          metalness={0.2}
-        />
+      <!-- 4. Anodized Aluminum Vented Backplate (Underside of PCB) -->
+      <T.Mesh position={[0, -0.06, 0]} castShadow receiveShadow>
+        <RoundedBoxGeometry args={[4.32, 0.035, 2.16]} radius={0.015} smoothness={3} />
+        <T.MeshPhysicalMaterial color="#1e293b" roughness={0.32} metalness={0.82} />
+      </T.Mesh>
+      <!-- Backplate GPU Core X-Clamp & MLCC Cavity -->
+      <T.Mesh position={[-0.75, -0.08, 0]} rotation.y={Math.PI / 4}>
+        <T.BoxGeometry args={[0.55, 0.015, 0.55]} />
+        <T.MeshStandardMaterial color="#94a3b8" roughness={0.25} metalness={0.9} />
+      </T.Mesh>
+      <T.Mesh position={[-0.75, -0.085, 0]}>
+        <T.BoxGeometry args={[0.32, 0.015, 0.32]} />
+        <T.MeshStandardMaterial color="#b45309" roughness={0.35} metalness={0.5} />
       </T.Mesh>
 
-      <!-- 5. Heatsink Aluminum Fin Array (Sirip Pendingin Metalik) -->
-      <T.Mesh position={[0.05, 0.2, 0]}>
-        <T.BoxGeometry args={[3.8, 0.3, 2.05]} />
-        <T.MeshStandardMaterial
-          color="#94a3b8"
-          roughness={0.4}
-          metalness={0.2}
-        />
-      </T.Mesh>
+      <!-- 5. Dense Aluminum Fin Stack Array & 4 Copper Heatpipes -->
+      <T.Group position={[0.05, 0.21, 0]}>
+        {#each finPositions as fx}
+          <T.Mesh position={[fx, 0, 0]} castShadow>
+            <T.BoxGeometry args={[0.035, 0.32, 2.02]} />
+            <T.MeshStandardMaterial color="#cbd5e1" roughness={0.28} metalness={0.88} />
+          </T.Mesh>
+        {/each}
 
-      <!-- Copper Heatpipes Accents (Pipa Tembaga Pendingin) -->
-      {#each [-0.4, 0.4] as z}
-        <T.Mesh position={[0.1, 0.2, z]} rotation.z={Math.PI / 2}>
-          <T.CylinderGeometry args={[0.06, 0.06, 3.6, 16]} />
-          <T.MeshStandardMaterial color="#d97706" roughness={0.3} metalness={0.5} />
-        </T.Mesh>
-      {/each}
-
-      <!-- 6. Cooler Shroud Bodi Depan (Abu-abu cerah/perak metalik bersih) -->
-      <T.Mesh position={[0.05, 0.44, 0]}>
-        <T.BoxGeometry args={[4.1, 0.18, 2.15]} />
-        <T.MeshStandardMaterial
-          color="#e2e8f0"
-          roughness={0.4}
-          metalness={0.2}
-        />
-      </T.Mesh>
-
-      <!-- Shroud Geometric Sporty Inset / Dark Accents -->
-      <T.Mesh position={[0.05, 0.535, 0]}>
-        <T.BoxGeometry args={[3.9, 0.015, 2.0]} />
-        <T.MeshStandardMaterial color="#475569" roughness={0.4} metalness={0.2} />
-      </T.Mesh>
-
-      <!-- Cyber Neon Accent Stripe on Top Edge -->
-      <T.Mesh position={[0.05, 0.45, -1.06]}>
-        <T.BoxGeometry args={[3.0, 0.06, 0.03]} />
-        <T.MeshStandardMaterial
-          color="#0284c7"
-          emissive="#38bdf8"
-          emissiveIntensity={0.8}
-          roughness={0.3}
-        />
-      </T.Mesh>
-
-      <!-- 8-Pin PCIe Power Connector on Top Right -->
-      <T.Mesh position={[1.6, 0.46, -0.9]}>
-        <T.BoxGeometry args={[0.5, 0.2, 0.25]} />
-        <T.MeshStandardMaterial color="#0f172a" roughness={0.6} />
-      </T.Mesh>
-
-      <!-- 7. Dual Cooling Fans (2 Silinder Kipas Pendingin Berputar) -->
-      <!-- Fan 1 (Kiri) -->
-      <T.Group position={[-0.95, 0.54, 0]} rotation.y={fanRot}>
-        <!-- Fan Center Hub -->
-        <T.Mesh position={[0, 0.02, 0]}>
-          <T.CylinderGeometry args={[0.3, 0.3, 0.07, 24]} />
-          <T.MeshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.3} />
-        </T.Mesh>
-        <!-- Center Logo Badge -->
-        <T.Mesh position={[0, 0.06, 0]}>
-          <T.CylinderGeometry args={[0.18, 0.18, 0.01, 24]} />
-          <T.MeshStandardMaterial color="#0284c7" emissive="#0284c7" emissiveIntensity={0.5} roughness={0.4} />
-        </T.Mesh>
-        <!-- Fan Blades (8 Bilah Kipas Aerodinamis) -->
-        {#each [0, 45, 90, 135, 180, 225, 270, 315] as angle}
-          <T.Mesh
-            position={[0, 0.01, 0]}
-            rotation.y={(angle * Math.PI) / 180}
-            rotation.z={0.15}
-          >
-            <T.BoxGeometry args={[0.75, 0.02, 0.18]} />
-            <T.MeshStandardMaterial color="#334155" roughness={0.4} metalness={0.2} />
+        <!-- 4 Polished Copper Heatpipes Running Through Fins -->
+        {#each [-0.62, -0.22, 0.22, 0.62] as hz}
+          <T.Mesh position={[0.05, 0, hz]} rotation.z={Math.PI / 2} castShadow>
+            <T.CylinderGeometry args={[0.052, 0.052, 4.05, 20]} />
+            <T.MeshPhysicalMaterial
+              color="#d97706"
+              roughness={0.18}
+              metalness={0.92}
+              clearcoat={0.35}
+            />
           </T.Mesh>
         {/each}
       </T.Group>
 
-      <!-- Fan 1 Outer Ring Frame -->
-      <T.Mesh position={[-0.95, 0.54, 0]}>
-        <T.RingGeometry args={[0.78, 0.88, 32]} />
-        <T.MeshBasicMaterial color="#94a3b8" />
-      </T.Mesh>
+      <!-- 6. Sculpted Brushed Aluminum/Gunmetal Cooler Shroud (Lifts when showDetails is active) -->
+      <T.Group position={[0.05, showDetails ? 0.82 : 0.45, 0]}>
+        <!-- Main Shroud Body -->
+        <T.Mesh castShadow receiveShadow>
+          <RoundedBoxGeometry args={[4.22, 0.18, 2.16]} radius={0.04} smoothness={4} />
+          <T.MeshPhysicalMaterial
+            color="#334155"
+            roughness={0.28}
+            metalness={0.78}
+            clearcoat={0.25}
+          />
+        </T.Mesh>
 
-      <!-- Fan 2 (Kanan) -->
-      <T.Group position={[1.05, 0.54, 0]} rotation.y={fanRot}>
-        <!-- Fan Center Hub -->
-        <T.Mesh position={[0, 0.02, 0]}>
-          <T.CylinderGeometry args={[0.3, 0.3, 0.07, 24]} />
-          <T.MeshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.3} />
+        <!-- Brushed Silver Top Faceplate Accent -->
+        <T.Mesh position={[0, 0.085, 0]} castShadow>
+          <RoundedBoxGeometry args={[4.02, 0.025, 1.96]} radius={0.02} smoothness={3} />
+          <T.MeshPhysicalMaterial color="#cbd5e1" roughness={0.22} metalness={0.86} />
         </T.Mesh>
-        <!-- Center Logo Badge -->
-        <T.Mesh position={[0, 0.06, 0]}>
-          <T.CylinderGeometry args={[0.18, 0.18, 0.01, 24]} />
-          <T.MeshStandardMaterial color="#0284c7" emissive="#0284c7" emissiveIntensity={0.5} roughness={0.4} />
+
+        <!-- Illuminated GEFORCE RTX Style Side RGB Bar -->
+        <T.Mesh position={[-0.2, 0.02, -1.08]}>
+          <RoundedBoxGeometry args={[2.2, 0.075, 0.03]} radius={0.01} smoothness={3} />
+          <T.MeshStandardMaterial
+            color="#38bdf8"
+            emissive="#0284c7"
+            emissiveIntensity={1.2}
+            roughness={0.2}
+          />
         </T.Mesh>
-        <!-- Fan Blades -->
-        {#each [0, 45, 90, 135, 180, 225, 270, 315] as angle}
-          <T.Mesh
-            position={[0, 0.01, 0]}
-            rotation.y={(angle * Math.PI) / 180}
-            rotation.z={0.15}
-          >
-            <T.BoxGeometry args={[0.75, 0.02, 0.18]} />
-            <T.MeshStandardMaterial color="#334155" roughness={0.4} metalness={0.2} />
+
+        <!-- 16-Pin 12VHPWR PCIe 5.0 Power Header on Top Edge -->
+        <T.Mesh position={[1.45, 0.04, -0.98]}>
+          <T.BoxGeometry args={[0.48, 0.18, 0.24]} />
+          <T.MeshStandardMaterial color="#020617" roughness={0.6} />
+        </T.Mesh>
+
+        <!-- 7. Dual Axial Cooling Fans with 9 Curved Blades -->
+        {#each [-1.02, 1.02] as fanX}
+          <!-- Recessed Dark Fan Shroud Cavity -->
+          <T.Mesh position={[fanX, 0.08, 0]}>
+            <T.CylinderGeometry args={[0.88, 0.88, 0.04, 40]} />
+            <T.MeshStandardMaterial color="#0f172a" roughness={0.5} metalness={0.3} />
           </T.Mesh>
+
+          <!-- Anodized Fan Bezel Ring -->
+          <T.Mesh position={[fanX, 0.102, 0]} rotation.x={Math.PI / 2}>
+            <T.RingGeometry args={[0.83, 0.9, 48]} />
+            <T.MeshStandardMaterial color="#64748b" roughness={0.25} metalness={0.85} />
+          </T.Mesh>
+
+          <!-- Spinning Fan Rotor -->
+          <T.Group position={[fanX, 0.1, 0]} rotation.y={fanRot}>
+            <!-- Central Metallic Motor Hub -->
+            <T.Mesh position={[0, 0.015, 0]} castShadow>
+              <T.CylinderGeometry args={[0.28, 0.28, 0.06, 32]} />
+              <T.MeshPhysicalMaterial color="#1e293b" roughness={0.25} metalness={0.85} />
+            </T.Mesh>
+            <!-- Concentric Copper/Cyan Hub Medallion -->
+            <T.Mesh position={[0, 0.046, 0]}>
+              <T.CylinderGeometry args={[0.17, 0.17, 0.008, 32]} />
+              <T.MeshStandardMaterial
+                color="#38bdf8"
+                emissive="#0284c7"
+                emissiveIntensity={0.55}
+                metalness={0.8}
+                roughness={0.2}
+              />
+            </T.Mesh>
+            <!-- 9 Swept Impeller Blades -->
+            {#each fanBladeAngles as angle}
+              <T.Group rotation.y={(angle * Math.PI) / 180}>
+                <T.Mesh position={[0.48, 0.01, 0]} rotation.x={0.38} rotation.z={-0.08}>
+                  <RoundedBoxGeometry args={[0.56, 0.018, 0.22]} radius={0.006} smoothness={2} />
+                  <T.MeshPhysicalMaterial color="#1e293b" roughness={0.32} metalness={0.45} />
+                </T.Mesh>
+              </T.Group>
+            {/each}
+          </T.Group>
         {/each}
       </T.Group>
-
-      <!-- Fan 2 Outer Ring Frame -->
-      <T.Mesh position={[1.05, 0.54, 0]}>
-        <T.RingGeometry args={[0.78, 0.88, 32]} />
-        <T.MeshBasicMaterial color="#94a3b8" />
-      </T.Mesh>
     </T.Group>
   {/if}
 </T.Group>
 
 <!-- ============================================== -->
-<!-- FLOATING PILL BUTTON SWITCHER (PERSIS SEPERTI SSD) -->
+<!-- FLOATING PILL BUTTON SWITCHER -->
 <!-- ============================================== -->
 {#if showOverlay}
-  <HTML position={[position[0], position[1] + 1.35, position[2]]} center pointerEvents="auto">
+  <HTML position={[position[0], position[1] + 1.4, position[2]]} center pointerEvents="auto">
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div
-      class="gpu-overlay"
-      onpointerdown={(e) => e.stopPropagation()}
-    >
+    <div class="gpu-overlay" onpointerdown={(e) => e.stopPropagation()}>
       <div class="tab-switch">
         <button
           type="button"
@@ -356,15 +391,15 @@
         <div class="detail-box">
           <span class="detail-title">
             {activeVariant === 'integrated'
-              ? '🧩 Integrated GPU (iGPU)'
-              : '🎮 Dedicated GPU (dGPU)'}
+              ? '🧩 Integrated GPU (SoC Die Architecture)'
+              : '🎮 Dedicated GPU (PCIe 4.0 x16 Graphics Card)'}
           </span>
           <span class="detail-desc">
             {activeVariant === 'integrated'
-              ? 'Menyatu dalam CPU/SoC • Berbagi Memori RAM • Hemat Daya Efisien'
-              : 'Kartu Ekspansi PCIe x16 • VRAM Mandiri GDDR6 • Dual Fan Cooling Aktif'}
+              ? 'Menyatu dalam SoC CPU • Shared DDR5 Memory • Efisiensi Daya Tinggi'
+              : '28 Aluminum Fins • 4 Copper Heatpipes • Dual Axial Fans • GDDR6X VRAM'}
           </span>
-          <span class="detail-hint">Klik objek 3D untuk menutup detail</span>
+          <span class="detail-hint">Klik objek 3D untuk menutup detail internal</span>
         </div>
       {/if}
     </div>

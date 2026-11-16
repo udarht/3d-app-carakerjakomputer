@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Canvas } from '@threlte/core';
-  import { PCFShadowMap } from 'three';
+  import { ACESFilmicToneMapping, PCFSoftShadowMap } from 'three';
   import Scene from './Scene.svelte';
 
   let {
@@ -19,7 +19,7 @@
 </script>
 
 <div class="canvas-wrapper">
-  <Canvas shadows={PCFShadowMap}>
+  <Canvas shadows={PCFSoftShadowMap} toneMapping={ACESFilmicToneMapping}>
     <Scene {selectedId} {ssdVariant} {gpuVariant} {onVariantChange} {onGpuVariantChange} />
   </Canvas>
 </div>
@@ -29,6 +29,6 @@
     width: 100%;
     height: 100%;
     position: relative;
-    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%);
+    background: radial-gradient(circle at 50% 42%, #ffffff 0%, #f1f5f9 58%, #cbd5e1 100%);
   }
 </style>
